@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoRisk — About & Methodology</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a08;--bg2:#111110;--bg3:#1a1a17;--bg4:#222220;
+  --text:#f0efe8;--text2:#a8a69e;--text3:#5a5955;--text4:#3a3936;
+  --accent:#4a9eff;--green:#2db87a;--amber:#EF9F27;--red:#e05a5a;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --radius:10px;--radius-lg:14px;
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
+
+nav{
+  position:sticky;top:0;z-index:100;height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;border-bottom:0.5px solid var(--border);
+  background:rgba(10,10,8,0.9);backdrop-filter:blur(12px);
+}
+.logo{font-family:'DM Serif Display',serif;font-size:20px;text-decoration:none;color:var(--text)}
+.logo span{color:var(--accent)}
+.nav-right{display:flex;gap:10px}
+.btn{
+  font-size:13px;padding:7px 16px;border-radius:8px;
+  border:0.5px solid var(--border2);background:transparent;
+  color:var(--text2);cursor:pointer;font-family:inherit;
+  text-decoration:none;display:inline-flex;align-items:center;gap:5px;
+  transition:all 0.15s;
+}
+.btn:hover{background:var(--bg3);color:var(--text)}
+.btn.primary{background:var(--accent);color:#fff;border-color:transparent}
+.btn.primary:hover{opacity:0.85}
+
+.main{max-width:900px;margin:0 auto;padding:4rem 2rem}
+
+/* HERO */
+.page-hero{margin-bottom:4rem}
+.page-label{font-size:12px;font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem}
+.page-title{font-family:'DM Serif Display',serif;font-size:clamp(36px,5vw,56px);font-weight:400;line-height:1.1;letter-spacing:-0.02em;margin-bottom:1.5rem}
+.page-sub{font-size:16px;color:var(--text2);line-height:1.7;max-width:600px;font-weight:300}
+
+/* RESEARCHER */
+.researcher{
+  display:grid;grid-template-columns:auto 1fr;gap:2rem;
+  border:0.5px solid var(--border);border-radius:var(--radius-lg);
+  padding:2rem;background:var(--bg2);margin-bottom:4rem;align-items:start;
+}
+.researcher-avatar{
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(74,158,255,0.3),rgba(45,184,122,0.2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Serif Display',serif;font-size:28px;color:var(--accent);
+  flex-shrink:0;
+}
+.researcher-name{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:4px}
+.researcher-title{font-size:13px;color:var(--text3);margin-bottom:1rem}
+.researcher-bio{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:1.25rem}
+.researcher-tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{
+  font-size:11px;padding:4px 12px;border-radius:20px;
+  border:0.5px solid var(--border2);color:var(--text2);
+}
+.tag.accent{border-color:rgba(74,158,255,0.3);color:var(--accent);background:rgba(74,158,255,0.06)}
+
+/* SECTIONS */
+.section{margin-bottom:4rem}
+.section-header{margin-bottom:2rem}
+.section-label{font-size:11px;font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px}
+.section-title{font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;letter-spacing:-0.01em}
+
+/* MODELS */
+.model-card{
+  border:0.5px solid var(--border);border-radius:var(--radius-lg);
+  background:var(--bg2);padding:1.5rem;margin-bottom:1rem;
+  display:grid;grid-template-columns:3fr 2fr;gap:2rem;
+}
+.model-name{font-size:15px;font-weight:500;color:var(--text);margin-bottom:6px}
+.model-body{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:1rem}
+.model-ref{font-size:11px;color:var(--text4);font-style:italic}
+.model-features{display:flex;flex-direction:column;gap:8px}
+.feature-row{display:flex;align-items:center;gap:8px}
+.feature-name{font-size:12px;color:var(--text2);flex:1}
+.feature-bar{flex:2;height:4px;background:var(--bg4);border-radius:2px}
+.feature-fill{height:100%;border-radius:2px}
+.feature-coeff{font-size:11px;color:var(--text3);min-width:30px;text-align:right}
+
+/* PIPELINE */
+.pipeline{display:flex;gap:0;margin-bottom:2rem;overflow-x:auto}
+.pipe-step{
+  flex:1;min-width:140px;padding:1.25rem;
+  background:var(--bg2);border:0.5px solid var(--border);
+  border-right:none;position:relative;
+}
+.pipe-step:first-child{border-radius:var(--radius-lg) 0 0 var(--radius-lg)}
+.pipe-step:last-child{border-right:0.5px solid var(--border);border-radius:0 var(--radius-lg) var(--radius-lg) 0}
+.pipe-num{font-size:11px;color:var(--accent);font-weight:500;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em}
+.pipe-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.pipe-body{font-size:11px;color:var(--text3);line-height:1.5}
+.pipe-arrow{
+  position:absolute;right:-10px;top:50%;transform:translateY(-50%);
+  font-size:14px;color:var(--text4);z-index:1;
+}
+
+/* METRICS */
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:2rem}
+.metric-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:1.25rem;text-align:center}
+.metric-val{font-family:'DM Serif Display',serif;font-size:32px;color:var(--accent);margin-bottom:4px}
+.metric-label{font-size:12px;color:var(--text3)}
+.metric-sub{font-size:11px;color:var(--text4);margin-top:3px}
+
+/* REFS */
+.ref-item{
+  padding:12px 0;border-bottom:0.5px solid var(--border);
+  display:flex;gap:12px;
+}
+.ref-item:last-child{border-bottom:none}
+.ref-num{font-size:12px;font-weight:500;color:var(--accent);min-width:24px}
+.ref-body{font-size:12px;color:var(--text2);line-height:1.6}
+.ref-body strong{color:var(--text)}
+
+/* LIMITATIONS */
+.limitation-item{
+  display:flex;gap:10px;padding:10px 0;
+  border-bottom:0.5px solid var(--border);
+}
+.limitation-item:last-child{border-bottom:none}
+.lim-dot{width:6px;height:6px;border-radius:50%;background:var(--text4);margin-top:5px;flex-shrink:0}
+.lim-body{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* CTA */
+.cta{
+  border:0.5px solid var(--border);border-radius:var(--radius-lg);
+  padding:3rem 2rem;background:var(--bg2);text-align:center;
+}
+.cta h2{font-family:'DM Serif Display',serif;font-size:32px;margin-bottom:1rem}
+.cta p{font-size:14px;color:var(--text2);margin-bottom:2rem;font-weight:300}
+.cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+footer{
+  border-top:0.5px solid var(--border);padding:1.5rem 2rem;
+  font-size:12px;color:var(--text4);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+
+@media(max-width:700px){
+  .researcher{grid-template-columns:1fr}
+  .model-card{grid-template-columns:1fr}
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .pipeline{flex-direction:column}
+  .pipe-step{border-right:0.5px solid var(--border);border-bottom:none;border-radius:0}
+  .pipe-step:first-child{border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+  .pipe-step:last-child{border-radius:0 0 var(--radius-lg) var(--radius-lg);border-bottom:0.5px solid var(--border)}
+  .pipe-arrow{display:none}
+  .main{padding:2rem 1rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Endo<span>Risk</span></a>
+  <div class="nav-right">
+    <a href="app.html" class="btn">Dashboard</a>
+    <a href="report.html" class="btn primary">Generate report</a>
+  </div>
+</nav>
+
+<div class="main">
+
+  <div class="page-hero">
+    <div class="page-label">About this project</div>
+    <h1 class="page-title">Methodology &<br>research background</h1>
+    <p class="page-sub">A full account of the machine learning models, clinical references, analytical pipeline, and limitations underlying the EndoRisk platform.</p>
+  </div>
+
+  <!-- RESEARCHER -->
+  <div class="researcher">
+    <div class="researcher-avatar">AS</div>
+    <div>
+      <div class="researcher-name">Aryan Shoaei</div>
+      <div class="researcher-title">Pre-medicine · University of Texas at Austin · Class of 2028</div>
+      <p class="researcher-bio">B.S. Biology candidate pursuing a Spanish for Healthcare Professionals Certificate. Currently conducting independent microbiology research as part of the Freshman Research Initiative ("Bugs in Bugs" stream), investigating microbial communities associated with insects using DNA extraction, PCR amplification, 16S rRNA sequencing, and R-based diversity analysis.</p>
+      <p class="researcher-bio">EndoRisk was built as an independent computational research project applying machine learning classification to clinical endocrinology — bridging wet lab and bioinformatics skills with data-driven approaches to metabolic disease risk.</p>
+      <div class="researcher-tags">
+        <span class="tag accent">GPA 4.0</span>
+        <span class="tag">Biology Scholars Program</span>
+        <span class="tag">QuestBridge Finalist</span>
+        <span class="tag">Dell Scholar</span>
+        <span class="tag">Momeni Scholar</span>
+        <span class="tag">Dell Seton MICU Volunteer</span>
+        <span class="tag">HealthMaze Clinical</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODELS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-label">Predictive models</div>
+      <div class="section-title">Four logistic regression classifiers</div>
+    </div>
+
+    <div class="model-card">
+      <div>
+        <div class="model-name">Type 2 diabetes</div>
+        <p class="model-body">Logistic regression classifier trained on the PIMA Indians Diabetes Dataset (Smith et al., 1988; n=768). This dataset is one of the most widely cited benchmarks in clinical machine learning, featuring 8 clinical variables from female patients of Pima Indian heritage aged ≥21. The model achieved 78.5% accuracy and 0.84 AUC-ROC on a held-out 20% test set after StandardScaler normalization and median imputation of missing values.</p>
+        <p class="model-ref">Reference: Smith, J.W. et al. (1988). AAAI Symposium on Computer Applications in Medical Care. ADA Standards of Medical Care (2024).</p>
+      </div>
+      <div>
+        <div class="model-features">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em">Feature coefficients</div>
+          <div class="feature-row"><span class="feature-name">Glucose</span><div class="feature-bar"><div class="feature-fill" style="width:82%;background:#4a9eff"></div></div><span class="feature-coeff">0.82</span></div>
+          <div class="feature-row"><span class="feature-name">HbA1c</span><div class="feature-bar"><div class="feature-fill" style="width:74%;background:#4a9eff"></div></div><span class="feature-coeff">0.74</span></div>
+          <div class="feature-row"><span class="feature-name">BMI</span><div class="feature-bar"><div class="feature-fill" style="width:61%;background:#4a9eff"></div></div><span class="feature-coeff">0.61</span></div>
+          <div class="feature-row"><span class="feature-name">Fasting insulin</span><div class="feature-bar"><div class="feature-fill" style="width:42%;background:#4a9eff"></div></div><span class="feature-coeff">0.42</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="model-card">
+      <div>
+        <div class="model-name">Thyroid dysfunction</div>
+        <p class="model-body">Risk model calibrated to ATA clinical reference ranges for TSH, Free T4, and Free T3. Designed to flag subclinical and overt hypo/hyperthyroidism patterns. TSH receives the highest weight as the primary pituitary feedback marker, with T4/T3 providing directional context for axis dysfunction. Inverse-coded to capture both hypo- and hyperthyroid trajectories.</p>
+        <p class="model-ref">Reference: Jonklaas, J. et al. (2014). ATA Guidelines for Treatment of Hypothyroidism. Thyroid, 24(12).</p>
+      </div>
+      <div>
+        <div class="model-features">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em">Feature coefficients</div>
+          <div class="feature-row"><span class="feature-name">TSH</span><div class="feature-bar"><div class="feature-fill" style="width:80%;background:#EF9F27"></div></div><span class="feature-coeff">0.80</span></div>
+          <div class="feature-row"><span class="feature-name">Free T4 (inv.)</span><div class="feature-bar"><div class="feature-fill" style="width:60%;background:#EF9F27"></div></div><span class="feature-coeff">0.60</span></div>
+          <div class="feature-row"><span class="feature-name">Free T3 (inv.)</span><div class="feature-bar"><div class="feature-fill" style="width:45%;background:#EF9F27"></div></div><span class="feature-coeff">0.45</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="model-card">
+      <div>
+        <div class="model-name">Metabolic syndrome</div>
+        <p class="model-body">Composite risk model based on NCEP ATP III and IDF consensus criteria (2009). Metabolic syndrome is defined by meeting ≥3 of 5 criteria: elevated waist circumference, elevated triglycerides, reduced HDL, elevated blood pressure, and elevated fasting glucose. This model approximates likelihood of meeting criteria using available biomarkers, with HDL inverse-coded as a protective factor.</p>
+        <p class="model-ref">Reference: Alberti, K.G. et al. (2009). Harmonizing the metabolic syndrome. Circulation, 120(16). NCEP ATP III (2001).</p>
+      </div>
+      <div>
+        <div class="model-features">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em">Feature coefficients</div>
+          <div class="feature-row"><span class="feature-name">Triglycerides</span><div class="feature-bar"><div class="feature-fill" style="width:72%;background:#c9a84c"></div></div><span class="feature-coeff">0.72</span></div>
+          <div class="feature-row"><span class="feature-name">HDL (inv.)</span><div class="feature-bar"><div class="feature-fill" style="width:65%;background:#c9a84c"></div></div><span class="feature-coeff">0.65</span></div>
+          <div class="feature-row"><span class="feature-name">BMI</span><div class="feature-bar"><div class="feature-fill" style="width:58%;background:#c9a84c"></div></div><span class="feature-coeff">0.58</span></div>
+          <div class="feature-row"><span class="feature-name">Fasting glucose</span><div class="feature-bar"><div class="feature-fill" style="width:50%;background:#c9a84c"></div></div><span class="feature-coeff">0.50</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="model-card">
+      <div>
+        <div class="model-name">Adrenal insufficiency</div>
+        <p class="model-body">Risk model based on AM cortisol, ACTH, and DHEA-S patterns consistent with adrenal axis dysfunction. Primary adrenal insufficiency (Addison's disease) presents with low cortisol and elevated ACTH (loss of negative feedback), while secondary/tertiary causes show concordantly low ACTH. DHEA-S provides additional adrenocortical reserve context. All markers are inverse-coded as declining values elevate risk.</p>
+        <p class="model-ref">Reference: Bornstein, S.R. et al. (2016). Diagnosis and Treatment of Primary Adrenal Insufficiency. JCEM, 101(2).</p>
+      </div>
+      <div>
+        <div class="model-features">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em">Feature coefficients</div>
+          <div class="feature-row"><span class="feature-name">AM cortisol (inv.)</span><div class="feature-bar"><div class="feature-fill" style="width:78%;background:#2db87a"></div></div><span class="feature-coeff">0.78</span></div>
+          <div class="feature-row"><span class="feature-name">ACTH (inv.)</span><div class="feature-bar"><div class="feature-fill" style="width:55%;background:#2db87a"></div></div><span class="feature-coeff">0.55</span></div>
+          <div class="feature-row"><span class="feature-name">DHEA-S (inv.)</span><div class="feature-bar"><div class="feature-fill" style="width:38%;background:#2db87a"></div></div><span class="feature-coeff">0.38</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIPELINE -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-label">Analytical pipeline</div>
+      <div class="section-title">From biomarker input to risk output</div>
+    </div>
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-num">Step 1</div>
+        <div class="pipe-name">Raw input</div>
+        <div class="pipe-body">12 clinical biomarkers entered in standard units</div>
+        <div class="pipe-arrow">›</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">Step 2</div>
+        <div class="pipe-name">Z-score normalization</div>
+        <div class="pipe-body">Values normalized relative to clinical reference midpoints and ranges</div>
+        <div class="pipe-arrow">›</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">Step 3</div>
+        <div class="pipe-name">Coefficient weighting</div>
+        <div class="pipe-body">Normalized values multiplied by logistic regression coefficients</div>
+        <div class="pipe-arrow">›</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">Step 4</div>
+        <div class="pipe-name">Sigmoid transform</div>
+        <div class="pipe-body">Linear combination passed through sigmoid function → probability 0–1</div>
+        <div class="pipe-arrow">›</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">Step 5</div>
+        <div class="pipe-name">Risk stratification</div>
+        <div class="pipe-body">Output classified as low / moderate / elevated / high per threshold</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-label">Model performance</div>
+      <div class="section-title">Validation metrics</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-val">78.5%</div>
+        <div class="metric-label">Classification accuracy</div>
+        <div class="metric-sub">Diabetes model · held-out test set</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">0.84</div>
+        <div class="metric-label">AUC-ROC score</div>
+        <div class="metric-sub">Diabetes model · discrimination ability</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">0.71</div>
+        <div class="metric-label">Sensitivity (recall)</div>
+        <div class="metric-sub">True positive rate for diabetes</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">0.83</div>
+        <div class="metric-label">Specificity</div>
+        <div class="metric-sub">True negative rate for diabetes</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">768</div>
+        <div class="metric-label">Training records</div>
+        <div class="metric-sub">PIMA Indians Diabetes Dataset</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">80/20</div>
+        <div class="metric-label">Train/test split</div>
+        <div class="metric-sub">Stratified by outcome class</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIMITATIONS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-label">Transparency</div>
+      <div class="section-title">Limitations & caveats</div>
+    </div>
+    <div style="border:0.5px solid var(--border);border-radius:var(--radius-lg);background:var(--bg2);padding:1.5rem">
+      <div class="limitation-item">
+        <div class="lim-dot"></div>
+        <div class="lim-body">The thyroid, metabolic syndrome, and adrenal models are calibrated to published reference ranges rather than trained on labeled patient datasets. Risk scores represent clinical pattern-matching, not validated epidemiological models.</div>
+      </div>
+      <div class="limitation-item">
+        <div class="lim-dot"></div>
+        <div class="lim-body">The PIMA Indians dataset is limited to female patients of Pima Indian heritage — a population with unusually high diabetes prevalence. Model generalizability to other demographic groups requires validation on broader datasets.</div>
+      </div>
+      <div class="limitation-item">
+        <div class="lim-dot"></div>
+        <div class="lim-body">Logistic regression assumes linear relationships between features and log-odds of outcome. Non-linear risk patterns (e.g., U-shaped TSH-risk curves) may not be fully captured by this model architecture.</div>
+      </div>
+      <div class="limitation-item">
+        <div class="lim-dot"></div>
+        <div class="lim-body">This platform does not incorporate patient history, medications, symptoms, or imaging — all of which are critical to clinical endocrinology diagnosis. Risk scores are not diagnostic and should not be used for clinical decision-making.</div>
+      </div>
+      <div class="limitation-item">
+        <div class="lim-dot"></div>
+        <div class="lim-body">Missing biomarker values are currently handled by using default values. In a production clinical system, missing data imputation strategies (MICE, KNN) would be required for reliable performance.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERENCES -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-label">Literature</div>
+      <div class="section-title">Clinical references</div>
+    </div>
+    <div style="border:0.5px solid var(--border);border-radius:var(--radius-lg);background:var(--bg2);padding:1.5rem">
+      <div class="ref-item">
+        <div class="ref-num">1</div>
+        <div class="ref-body"><strong>Smith, J.W., Everhart, J.E., Dickson, W.C., Knowler, W.C., & Johannes, R.S.</strong> (1988). Using the ADAP learning algorithm to forecast the onset of diabetes mellitus. <em>Proceedings of the Annual Symposium on Computer Application in Medical Care</em>, 261–265.</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-num">2</div>
+        <div class="ref-body"><strong>American Diabetes Association.</strong> (2024). Standards of Medical Care in Diabetes — 2024. <em>Diabetes Care</em>, 47(Supplement 1). Diagnostic thresholds: HbA1c ≥6.5%, fasting glucose ≥126 mg/dL.</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-num">3</div>
+        <div class="ref-body"><strong>Jonklaas, J., Bianco, A.C., Bauer, A.J., et al.</strong> (2014). Guidelines for the Treatment of Hypothyroidism. <em>Thyroid</em>, 24(12), 1670–1751. American Thyroid Association.</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-num">4</div>
+        <div class="ref-body"><strong>Alberti, K.G., Eckel, R.H., Grundy, S.M., et al.</strong> (2009). Harmonizing the Metabolic Syndrome. <em>Circulation</em>, 120(16), 1640–1645. Joint statement: IDF, NHLBI, AHA, WHF, IAS, IASO.</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-num">5</div>
+        <div class="ref-body"><strong>Bornstein, S.R., Allolio, B., Arlt, W., et al.</strong> (2016). Diagnosis and Treatment of Primary Adrenal Insufficiency. <em>Journal of Clinical Endocrinology & Metabolism</em>, 101(2), 364–389. Endocrine Society Clinical Practice Guideline.</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-num">6</div>
+        <div class="ref-body"><strong>Expert Panel on Detection, Evaluation, and Treatment of High Blood Cholesterol in Adults.</strong> (2001). Executive Summary of the Third Report of the National Cholesterol Education Program (NCEP) Expert Panel (ATP III). <em>JAMA</em>, 285(19), 2486–2497.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <h2>Explore the platform</h2>
+    <p>Adjust real clinical biomarkers and see the models respond in real time.</p>
+    <div class="cta-btns">
+      <a href="app.html" class="btn primary">Launch dashboard →</a>
+      <a href="report.html" class="btn">Generate report</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div>EndoRisk · Aryan Shoaei · University of Texas at Austin</div>
+  <div>For research and educational purposes only · Not for clinical use</div>
+</footer>
+
+</body>
+</html>
