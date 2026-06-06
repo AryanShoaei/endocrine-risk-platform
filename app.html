@@ -650,13 +650,19 @@ function labStatus(k){const l=labs[k];return l.val<l.refLow?'low':l.val>l.refHig
 // ============================================================
 let scene,camera,renderer,organMeshes={},animFrame;
 const organDefs=[
-  {id:'thyroid',name:'Thyroid',x:0,y:1.2,z:0.3,rx:0.1,ry:0.1,rz:0,sx:0.35,sy:0.18,sz:0.12,shape:'thyroid'},
-  {id:'pancreas',name:'Pancreas',x:-0.3,y:0,z:0.2,rx:0.2,ry:-0.3,rz:0.2,sx:0.5,sy:0.12,sz:0.1,shape:'elongated'},
-  {id:'adrenal',name:'Adrenal (L)',x:-0.55,y:0.55,z:0.1,rx:0,ry:0,rz:0.3,sx:0.1,sy:0.14,sz:0.08,shape:'pyramid'},
-  {id:'adrenal2',name:'Adrenal (R)',x:0.55,y:0.55,z:0.1,rx:0,ry:0,rz:-0.3,sx:0.1,sy:0.14,sz:0.08,shape:'pyramid'},
-  {id:'liver',name:'Liver',x:0.4,y:0.15,z:0.15,rx:0,ry:0,rz:0,sx:0.42,sy:0.28,sz:0.18,shape:'rounded'},
-  {id:'pituitary',name:'Pituitary',x:0,y:2.05,z:0.05,rx:0,ry:0,rz:0,sx:0.07,sy:0.07,sz:0.07,shape:'sphere'},
-  {id:'gonads',name:'Gonads',x:0,y:-1.1,z:0.1,rx:0,ry:0,rz:0,sx:0.12,sy:0.1,sz:0.1,shape:'sphere'},
+  // Pituitary — tiny, at base of brain
+  {id:'pituitary',name:'Pituitary',x:0,y:1.78,z:0.1,rx:0,ry:0,rz:0,sx:0.06,sy:0.05,sz:0.06,shape:'sphere'},
+  // Thyroid — butterfly shape, below neck
+  {id:'thyroid',name:'Thyroid',x:-0.1,y:1.1,z:0.28,rx:0.1,ry:0.1,rz:0,sx:0.16,sy:0.1,sz:0.09,shape:'thyroid'},
+  // Adrenals — small pyramidal, above kidneys
+  {id:'adrenal',name:'Adrenal (L)',x:-0.32,y:0.52,z:0.08,rx:0,ry:0,rz:0.2,sx:0.07,sy:0.1,sz:0.06,shape:'pyramid'},
+  {id:'adrenal2',name:'Adrenal (R)',x:0.38,y:0.52,z:0.08,rx:0,ry:0,rz:-0.2,sx:0.07,sy:0.1,sz:0.06,shape:'pyramid'},
+  // Pancreas — elongated, slightly left of center
+  {id:'pancreas',name:'Pancreas',x:-0.18,y:0.08,z:0.15,rx:0.15,ry:-0.2,rz:0.25,sx:0.28,sy:0.08,sz:0.08,shape:'elongated'},
+  // Liver — large rounded, right side
+  {id:'liver',name:'Liver',x:0.28,y:0.22,z:0.12,rx:0,ry:0,rz:0,sx:0.32,sy:0.2,sz:0.15,shape:'rounded'},
+  // Gonads — lower abdomen
+  {id:'gonads',name:'Gonads',x:0,y:-0.9,z:0.1,rx:0,ry:0,rz:0,sx:0.09,sy:0.08,sz:0.08,shape:'sphere'},
 ];
 
 function initThree(){
@@ -667,7 +673,7 @@ function initThree(){
   scene=new THREE.Scene();
   scene.fog=new THREE.FogExp2(0x04040a,0.08);
   camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
-  camera.position.set(0,0.4,5.8);
+  camera.position.set(0,0.5,4.2);
 
   renderer=new THREE.WebGLRenderer({canvas:container,antialias:true,alpha:true});
   renderer.setSize(W,H);
@@ -878,12 +884,12 @@ let flowParticles=[];
 
 function buildConnectionLines(){
   // HPT axis: pituitary -> thyroid
-  const hptPoints=[new THREE.Vector3(0,2.05,0.05),new THREE.Vector3(0,1.2,0.3)];
+  const hptPoints=[new THREE.Vector3(0,1.78,0.1),new THREE.Vector3(-0.1,1.1,0.28)];
   // HPA axis: pituitary -> adrenals
-  const hpaPoints=[new THREE.Vector3(0,2.05,0.05),new THREE.Vector3(-0.55,0.55,0.1)];
-  const hpaPoints2=[new THREE.Vector3(0,2.05,0.05),new THREE.Vector3(0.55,0.55,0.1)];
+  const hpaPoints=[new THREE.Vector3(0,1.78,0.1),new THREE.Vector3(-0.32,0.52,0.08)];
+  const hpaPoints2=[new THREE.Vector3(0,1.78,0.1),new THREE.Vector3(0.38,0.52,0.08)];
   // Pancreas -> liver (insulin axis)
-  const insPoints=[new THREE.Vector3(-0.3,0,0.2),new THREE.Vector3(0.4,0.15,0.15)];
+  const insPoints=[new THREE.Vector3(-0.18,0.08,0.15),new THREE.Vector3(0.28,0.22,0.12)];
 
   [[hptPoints,0x00d4ff],[hpaPoints,0x00ff88],[hpaPoints2,0x00ff88],[insPoints,0xff4466]].forEach(([pts,col])=>{
     const geo=new THREE.BufferGeometry().setFromPoints(pts);
@@ -897,9 +903,10 @@ function buildConnectionLines(){
 function buildFlowParticles(){
   // Animated particles traveling along endocrine axes
   const axes=[
-    {from:new THREE.Vector3(0,2.05,0.05),to:new THREE.Vector3(0,1.2,0.3),color:0x00d4ff,speed:0.008},
-    {from:new THREE.Vector3(0,2.05,0.05),to:new THREE.Vector3(-0.55,0.55,0.1),color:0x00ff88,speed:0.006},
-    {from:new THREE.Vector3(-0.3,0,0.2),to:new THREE.Vector3(0.4,0.15,0.15),color:0xff4466,speed:0.01},
+    {from:new THREE.Vector3(0,1.78,0.1),to:new THREE.Vector3(-0.1,1.1,0.28),color:0x00d4ff,speed:0.012},
+    {from:new THREE.Vector3(0,1.78,0.1),to:new THREE.Vector3(-0.32,0.52,0.08),color:0x00ff88,speed:0.009},
+    {from:new THREE.Vector3(0,1.78,0.1),to:new THREE.Vector3(0.38,0.52,0.08),color:0x00ff88,speed:0.007},
+    {from:new THREE.Vector3(-0.18,0.08,0.15),to:new THREE.Vector3(0.28,0.22,0.12),color:0xff4466,speed:0.014},
   ];
   axes.forEach(axis=>{
     for(let i=0;i<3;i++){
