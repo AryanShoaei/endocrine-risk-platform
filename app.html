@@ -665,43 +665,59 @@ function initThree(){
   const W=parent.offsetWidth,H=parent.offsetHeight;
 
   scene=new THREE.Scene();
+  scene.fog=new THREE.FogExp2(0x04040a,0.08);
   camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
-  camera.position.set(0,0.3,5.5);
+  camera.position.set(0,0.4,5.8);
 
   renderer=new THREE.WebGLRenderer({canvas:container,antialias:true,alpha:true});
   renderer.setSize(W,H);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.2;
 
   // Lighting
-  const ambient=new THREE.AmbientLight(0x6c63ff,0.4);
+  const ambient=new THREE.AmbientLight(0x6c63ff,0.3);
   scene.add(ambient);
-  const dirLight=new THREE.DirectionalLight(0xffffff,1.2);
-  dirLight.position.set(3,5,5);
+  const dirLight=new THREE.DirectionalLight(0xffffff,1.5);
+  dirLight.position.set(4,6,5);
   dirLight.castShadow=true;
+  dirLight.shadow.mapSize.width=1024;
+  dirLight.shadow.mapSize.height=1024;
   scene.add(dirLight);
-  const rimLight=new THREE.DirectionalLight(0x00d4ff,0.6);
-  rimLight.position.set(-3,-2,-3);
+  const rimLight=new THREE.DirectionalLight(0x00d4ff,0.8);
+  rimLight.position.set(-4,-2,-3);
   scene.add(rimLight);
-  const fillLight=new THREE.PointLight(0x6c63ff,0.8,10);
-  fillLight.position.set(0,2,3);
+  const fillLight=new THREE.PointLight(0x6c63ff,1.2,12);
+  fillLight.position.set(0,2,4);
   scene.add(fillLight);
+  const bottomLight=new THREE.PointLight(0x00ff88,0.4,8);
+  bottomLight.position.set(0,-3,2);
+  scene.add(bottomLight);
 
-  // Torso outline (body shape)
   buildBody();
-
-  // Organs
   organDefs.forEach(o=>buildOrgan(o));
-
-  // Particles
+  buildConnectionLines();
   buildParticles();
+  buildFlowParticles();
 
-  // Grid floor
-  const gridHelper=new THREE.GridHelper(8,20,0x6c63ff,0x111122);
-  gridHelper.position.y=-2.5;
-  gridHelper.material.opacity=0.3;
+  // Ground grid
+  const gridHelper=new THREE.GridHelper(10,24,0x6c63ff,0x0d0d1f);
+  gridHelper.position.y=-2.8;
+  gridHelper.material.opacity=0.25;
   gridHelper.material.transparent=true;
   scene.add(gridHelper);
+
+  // Mouse interaction
+  let mouseX=0,mouseY=0;
+  container.addEventListener('mousemove',e=>{
+    const rect=container.getBoundingClientRect();
+    mouseX=((e.clientX-rect.left)/W-0.5)*2;
+    mouseY=-((e.clientY-rect.top)/H-0.5)*2;
+    targetMouseX=mouseX*0.15;
+    targetMouseY=mouseY*0.08;
+  });
 
   animate();
   updateOrganColors();
@@ -716,9 +732,7 @@ function initThree(){
 
 function buildBody(){
   // Torso wireframe
-  const torsoGeo=new THREE.CapsuleGeometry?
-    new THREE.CapsuleGeometry(0.72,2.2,8,16):
-    new THREE.CylinderGeometry(0.72,0.6,2.2,16);
+  const torsoGeo=new THREE.CylinderGeometry(0.72,0.6,2.2,16);
   const torsoMat=new THREE.MeshPhongMaterial({
     color:0x1a1a2e,wireframe:false,
     transparent:true,opacity:0.15,
@@ -774,48 +788,75 @@ function buildBody(){
 
 function buildOrgan(o){
   let geo;
-  if(o.shape==='thyroid'){
-    // Two lobes for thyroid
-    const lobe1=new THREE.SphereGeometry(1,12,8);
-    const lobe2=new THREE.SphereGeometry(1,12,8);
-    geo=lobe1; // simplified
-  } else if(o.shape==='elongated'||o.shape==='thyroid'){
-    geo=new THREE.CapsuleGeometry?new THREE.CapsuleGeometry(0.5,1,6,8):new THREE.CylinderGeometry(0.5,0.4,1,8);
-  } else if(o.shape==='pyramid'){
-    geo=new THREE.ConeGeometry(0.5,1,6);
-  } else if(o.shape==='rounded'){
-    geo=new THREE.SphereGeometry(1,10,8);
-  } else {
-    geo=new THREE.SphereGeometry(1,12,10);
+  switch(o.shape){
+    case 'thyroid':
+      // Butterfly shape using two offset spheres merged visually
+      geo=new THREE.SphereGeometry(1,14,10);
+      break;
+    case 'elongated':
+      geo=new THREE.CylinderGeometry(0.4,0.35,1.2,10);
+      break;
+    case 'pyramid':
+      geo=new THREE.ConeGeometry(0.6,1.2,5);
+      break;
+    case 'rounded':
+      // Liver - flattened sphere
+      geo=new THREE.SphereGeometry(1,12,8);
+      break;
+    case 'sphere':
+    default:
+      geo=new THREE.SphereGeometry(1,14,10);
   }
 
   const mat=new THREE.MeshPhongMaterial({
     color:0x4a43cc,
     emissive:0x6c63ff,
-    emissiveIntensity:0.3,
+    emissiveIntensity:0.4,
     transparent:true,
-    opacity:0.85,
-    shininess:60,
+    opacity:0.88,
+    shininess:80,
+    specular:0x9999ff,
   });
 
+  const group=new THREE.Group();
   const mesh=new THREE.Mesh(geo,mat);
-  mesh.position.set(o.x,o.y,o.z);
-  mesh.rotation.set(o.rx,o.ry,o.rz);
-  mesh.scale.set(o.sx,o.sy,o.sz);
   mesh.castShadow=true;
+  mesh.receiveShadow=true;
   mesh.userData={id:o.id,name:o.name};
+  group.add(mesh);
 
-  // Glow sphere
-  const glowGeo=new THREE.SphereGeometry(1.3,8,8);
+  // For thyroid - add second lobe
+  if(o.shape==='thyroid'){
+    const lobe2Geo=new THREE.SphereGeometry(1,14,10);
+    const lobe2Mat=mat.clone();
+    const lobe2=new THREE.Mesh(lobe2Geo,lobe2Mat);
+    lobe2.position.x=0.6;
+    lobe2.scale.set(0.7,0.8,0.7);
+    group.add(lobe2);
+    // Isthmus connecting bar
+    const isthGeo=new THREE.CylinderGeometry(0.15,0.15,0.6,6);
+    const isthMesh=new THREE.Mesh(isthGeo,mat.clone());
+    isthMesh.rotation.z=Math.PI/2;
+    isthMesh.position.x=0.3;
+    group.add(isthMesh);
+  }
+
+  // Outer glow
+  const glowGeo=new THREE.SphereGeometry(1.5,8,6);
   const glowMat=new THREE.MeshBasicMaterial({
-    color:0x6c63ff,transparent:true,opacity:0.05,side:THREE.BackSide
+    color:0x6c63ff,transparent:true,opacity:0.04,side:THREE.BackSide
   });
   const glow=new THREE.Mesh(glowGeo,glowMat);
-  mesh.add(glow);
+  group.add(glow);
 
-  scene.add(mesh);
+  group.position.set(o.x,o.y,o.z);
+  group.rotation.set(o.rx,o.ry,o.rz);
+  group.scale.set(o.sx,o.sy,o.sz);
+  group.userData={id:o.id,name:o.name};
+
+  scene.add(group);
   if(!organMeshes[o.id])organMeshes[o.id]=[];
-  organMeshes[o.id].push({mesh,glow,glowMat});
+  organMeshes[o.id].push({mesh,glow,glowMat,group});
 }
 
 function buildParticles(){
@@ -832,26 +873,80 @@ function buildParticles(){
   scene.add(new THREE.Points(geo,mat));
 }
 
-let time=0;
+let time=0,targetMouseX=0,targetMouseY=0,currentMouseX=0,currentMouseY=0;
+let flowParticles=[];
+
+function buildConnectionLines(){
+  // HPT axis: pituitary -> thyroid
+  const hptPoints=[new THREE.Vector3(0,2.05,0.05),new THREE.Vector3(0,1.2,0.3)];
+  // HPA axis: pituitary -> adrenals
+  const hpaPoints=[new THREE.Vector3(0,2.05,0.05),new THREE.Vector3(-0.55,0.55,0.1)];
+  const hpaPoints2=[new THREE.Vector3(0,2.05,0.05),new THREE.Vector3(0.55,0.55,0.1)];
+  // Pancreas -> liver (insulin axis)
+  const insPoints=[new THREE.Vector3(-0.3,0,0.2),new THREE.Vector3(0.4,0.15,0.15)];
+
+  [[hptPoints,0x00d4ff],[hpaPoints,0x00ff88],[hpaPoints2,0x00ff88],[insPoints,0xff4466]].forEach(([pts,col])=>{
+    const geo=new THREE.BufferGeometry().setFromPoints(pts);
+    const mat=new THREE.LineDashedMaterial({color:col,transparent:true,opacity:0.15,dashSize:0.1,gapSize:0.08,linewidth:1});
+    const line=new THREE.Line(geo,mat);
+    line.computeLineDistances();
+    scene.add(line);
+  });
+}
+
+function buildFlowParticles(){
+  // Animated particles traveling along endocrine axes
+  const axes=[
+    {from:new THREE.Vector3(0,2.05,0.05),to:new THREE.Vector3(0,1.2,0.3),color:0x00d4ff,speed:0.008},
+    {from:new THREE.Vector3(0,2.05,0.05),to:new THREE.Vector3(-0.55,0.55,0.1),color:0x00ff88,speed:0.006},
+    {from:new THREE.Vector3(-0.3,0,0.2),to:new THREE.Vector3(0.4,0.15,0.15),color:0xff4466,speed:0.01},
+  ];
+  axes.forEach(axis=>{
+    for(let i=0;i<3;i++){
+      const geo=new THREE.SphereGeometry(0.025,4,4);
+      const mat=new THREE.MeshBasicMaterial({color:axis.color,transparent:true,opacity:0.7});
+      const mesh=new THREE.Mesh(geo,mat);
+      scene.add(mesh);
+      flowParticles.push({mesh,from:axis.from,to:axis.to,t:i/3,speed:axis.speed,color:axis.color});
+    }
+  });
+}
+
 function animate(){
   animFrame=requestAnimationFrame(animate);
   time+=0.008;
 
-  // Gentle rotation of whole scene
-  scene.rotation.y=Math.sin(time*0.3)*0.15;
+  // Smooth mouse tracking
+  currentMouseX+=(targetMouseX-currentMouseX)*0.05;
+  currentMouseY+=(targetMouseY-currentMouseY)*0.05;
+  scene.rotation.y=Math.sin(time*0.25)*0.12+currentMouseX;
+  scene.rotation.x=currentMouseY*0.5;
 
   // Organ pulse based on risk
   const risks=getRisks();
-  const riskMap={thyroid:risks.thyroid,pancreas:risks.diabetes,liver:risks.metabolic,adrenal:risks.adrenal,adrenal2:risks.adrenal};
+  const riskMap={thyroid:risks.thyroid,pancreas:risks.diabetes,liver:risks.metabolic,adrenal:risks.adrenal,adrenal2:risks.adrenal,pituitary:20,gonads:15};
 
   Object.entries(organMeshes).forEach(([id,arr])=>{
     const risk=riskMap[id]||20;
-    const pulse=1+Math.sin(time*(1+risk/50))*0.04*(risk/50);
-    arr.forEach(({mesh,glow,glowMat})=>{
-      mesh.scale.x=mesh.userData.baseScaleX*(pulse);
-      mesh.scale.y=mesh.userData.baseScaleY*(pulse);
-      glow.material.opacity=0.03+0.08*(risk/100);
+    const speed=0.8+risk/60;
+    const pulse=1+Math.sin(time*speed)*0.04*(risk/80);
+    arr.forEach(({mesh,glow,glowMat,group})=>{
+      const target=group||mesh;
+      if(target.userData.baseScaleX){
+        target.scale.x=target.userData.baseScaleX*pulse;
+        target.scale.y=target.userData.baseScaleY*pulse;
+      }
+      if(glow&&glow.material)glow.material.opacity=0.02+0.12*(risk/100);
     });
+  });
+
+  // Animate flow particles
+  flowParticles.forEach(p=>{
+    p.t=(p.t+p.speed)%1;
+    p.mesh.position.lerpVectors(p.from,p.to,p.t);
+    p.mesh.material.opacity=0.3+Math.sin(p.t*Math.PI)*0.7;
+    const scale=0.5+Math.sin(p.t*Math.PI)*0.8;
+    p.mesh.scale.setScalar(scale);
   });
 
   renderer.render(scene,camera);
@@ -865,24 +960,28 @@ function updateOrganColors(){
     liver:risks.metabolic,
     adrenal:risks.adrenal,
     adrenal2:risks.adrenal,
-    pituitary:20,
-    gonads:20
+    pituitary:18,
+    gonads:15
   };
-
-  const conditions_color={thyroid:'#00d4ff',pancreas:'#ff4466',liver:'#ffaa00',adrenal:'#00ff88',adrenal2:'#00ff88',pituitary:'#6c63ff',gonads:'#ff6eb4'};
 
   Object.entries(organMeshes).forEach(([id,arr])=>{
     const risk=colorMap[id]||20;
     const col=riskColor(risk);
     const hexCol=parseInt(col.bar.replace('#',''),16);
-    arr.forEach(({mesh,glow,glowMat})=>{
-      mesh.material.color.setHex(hexCol);
-      mesh.material.emissive.setHex(hexCol);
-      mesh.material.emissiveIntensity=0.2+0.4*(risk/100);
-      glowMat.color.setHex(hexCol);
-      if(!mesh.userData.baseScaleX){
-        mesh.userData.baseScaleX=mesh.scale.x;
-        mesh.userData.baseScaleY=mesh.scale.y;
+    arr.forEach(({mesh,glow,glowMat,group})=>{
+      // Update all MeshPhongMaterial children
+      const target=group||mesh;
+      target.traverse(child=>{
+        if(child.isMesh&&child.material&&child.material.emissive){
+          child.material.color.setHex(hexCol);
+          child.material.emissive.setHex(hexCol);
+          child.material.emissiveIntensity=0.25+0.5*(risk/100);
+        }
+      });
+      if(glowMat)glowMat.color.setHex(hexCol);
+      if(!group.userData.baseScaleX){
+        group.userData.baseScaleX=group.scale.x;
+        group.userData.baseScaleY=group.scale.y;
       }
     });
   });
@@ -890,11 +989,12 @@ function updateOrganColors(){
 
 // Store base scales after init
 setTimeout(()=>{
-  Object.values(organMeshes).forEach(arr=>arr.forEach(({mesh})=>{
-    mesh.userData.baseScaleX=mesh.scale.x;
-    mesh.userData.baseScaleY=mesh.scale.y;
+  Object.values(organMeshes).forEach(arr=>arr.forEach(({mesh,group})=>{
+    const target=group||mesh;
+    target.userData.baseScaleX=target.scale.x;
+    target.userData.baseScaleY=target.scale.y;
   }));
-},100);
+},200);
 
 // ============================================================
 // GAUGES
@@ -1355,7 +1455,7 @@ function switchView(v,tabBtn,navItem){
 // INIT
 // ============================================================
 window.addEventListener('load',()=>{
-  initThree();
+  try{initThree();}catch(e){console.error("Three.js error:",e);document.getElementById("three-canvas").insertAdjacentHTML("afterend","<div style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#4a485a;font-family:JetBrains Mono,monospace;font-size:12px'>3D model unavailable<br>on this browser</div>");}
   renderGauges();
   renderSymptoms();
   renderRadar();
