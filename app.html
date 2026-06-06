@@ -2,348 +2,523 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" href="shared.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EndoRisk — Dashboard</title>
+<title>EndoRisk — Clinical Intelligence Platform</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0d0d0b;--bg2:#141412;--bg3:#1c1c19;--bg4:#242420;
-  --text:#f0efe8;--text2:#a8a69e;--text3:#5a5955;--text4:#3a3936;
-  --accent:#4a9eff;--accent2:#2d7dd2;
-  --green:#2db87a;--green2:#1a8f5a;
-  --amber:#EF9F27;--amber2:#BA7517;
-  --red:#e05a5a;--red2:#b03a3a;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
-  --radius:10px;--radius-lg:14px;
-}
-html,body{height:100%;overflow:hidden}
-body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;font-size:13px}
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
-/* TOP BAR */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#04040a;
+  --bg1:#080812;
+  --bg2:#0c0c1a;
+  --bg3:#10101f;
+  --bg4:#161625;
+  --text:#e8e6f0;
+  --text2:#9896b0;
+  --text3:#4a485a;
+  --text4:#2a2838;
+  --accent:#6c63ff;
+  --accent2:#4a43cc;
+  --cyan:#00d4ff;
+  --green:#00ff88;
+  --amber:#ffaa00;
+  --red:#ff4466;
+  --pink:#ff6eb4;
+  --border:rgba(108,99,255,0.12);
+  --border2:rgba(108,99,255,0.25);
+  --glow:rgba(108,99,255,0.15);
+  --font:'Syne',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:var(--font);color:var(--text);display:flex;flex-direction:column}
+
+/* TOPBAR */
 .topbar{
-  height:52px;flex-shrink:0;
+  height:56px;flex-shrink:0;
   display:flex;align-items:center;justify-content:space-between;
   padding:0 1.5rem;
+  background:rgba(8,8,18,0.9);
   border-bottom:0.5px solid var(--border);
-  background:var(--bg2);
+  backdrop-filter:blur(20px);
+  z-index:200;position:relative;
 }
-.topbar-left{display:flex;align-items:center;gap:1rem}
-.logo{font-family:'DM Serif Display',serif;font-size:18px;color:var(--text)}
-.logo span{color:var(--accent)}
-.breadcrumb{font-size:12px;color:var(--text3);display:flex;align-items:center;gap:6px}
-.breadcrumb a{color:var(--text3);text-decoration:none}
-.breadcrumb a:hover{color:var(--text2)}
-.topbar-right{display:flex;align-items:center;gap:10px}
-.topbar-btn{
-  font-size:12px;padding:5px 14px;
-  border-radius:7px;border:0.5px solid var(--border2);
-  background:transparent;color:var(--text2);cursor:pointer;font-family:inherit;
-  text-decoration:none;display:inline-flex;align-items:center;gap:5px;
-  transition:all 0.15s;
+.logo{
+  font-size:20px;font-weight:800;letter-spacing:-0.03em;
+  background:linear-gradient(135deg,var(--accent),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
-.topbar-btn:hover{background:var(--bg3);color:var(--text)}
-.topbar-btn.primary{background:var(--accent);color:#fff;border-color:transparent}
-.topbar-btn.primary:hover{background:var(--accent2)}
+.topbar-center{
+  display:flex;gap:4px;
+  background:var(--bg3);border-radius:10px;padding:3px;
+  border:0.5px solid var(--border);
+}
+.tab-btn{
+  font-size:12px;font-weight:600;padding:6px 16px;border-radius:7px;
+  border:none;background:transparent;color:var(--text3);
+  cursor:pointer;font-family:var(--font);letter-spacing:0.02em;
+  transition:all 0.2s;
+}
+.tab-btn.active{
+  background:var(--accent);color:#fff;
+  box-shadow:0 0 20px rgba(108,99,255,0.4);
+}
+.topbar-right{display:flex;gap:8px;align-items:center}
+.chip{
+  font-size:11px;font-family:var(--mono);
+  padding:4px 10px;border-radius:6px;
+  border:0.5px solid var(--border2);
+  color:var(--accent);background:var(--glow);
+}
+.top-btn{
+  font-size:12px;font-weight:600;padding:7px 16px;border-radius:8px;
+  border:0.5px solid var(--border2);background:transparent;
+  color:var(--text2);cursor:pointer;font-family:var(--font);
+  text-decoration:none;transition:all 0.2s;
+}
+.top-btn:hover{background:var(--bg4);color:var(--text);border-color:var(--accent)}
+.top-btn.accent{background:var(--accent);color:#fff;border-color:transparent}
+.top-btn.accent:hover{background:var(--accent2);box-shadow:0 0 20px rgba(108,99,255,0.4)}
 
 /* LAYOUT */
-.app-body{display:flex;flex:1;overflow:hidden}
+.app-body{flex:1;display:flex;overflow:hidden}
 
 /* SIDEBAR */
 .sidebar{
-  width:220px;flex-shrink:0;
+  width:240px;flex-shrink:0;
   border-right:0.5px solid var(--border);
-  background:var(--bg2);
+  background:var(--bg1);
   display:flex;flex-direction:column;
-  padding:1rem 0;
   overflow-y:auto;
+  scrollbar-width:none;
 }
-.sidebar-section{margin-bottom:1.5rem}
-.sidebar-label{
-  font-size:10px;font-weight:500;color:var(--text4);
-  text-transform:uppercase;letter-spacing:0.09em;
-  padding:0 1rem;margin-bottom:6px;
-}
-.sidebar-item{
-  display:flex;align-items:center;gap:9px;
-  padding:7px 1rem;font-size:13px;color:var(--text2);
-  cursor:pointer;transition:all 0.1s;border-left:2px solid transparent;
-}
-.sidebar-item:hover{color:var(--text);background:var(--bg3)}
-.sidebar-item.active{color:var(--text);background:var(--bg3);border-left-color:var(--accent)}
-.sidebar-icon{font-size:15px;width:18px;text-align:center}
+.sidebar::-webkit-scrollbar{display:none}
 
-.patient-card{
-  margin:0 0.75rem 1rem;
-  padding:12px;border:0.5px solid var(--border);
-  border-radius:var(--radius);background:var(--bg3);
+.patient-hero{
+  padding:1.25rem;
+  background:linear-gradient(135deg,rgba(108,99,255,0.1),rgba(0,212,255,0.05));
+  border-bottom:0.5px solid var(--border);
 }
 .patient-avatar{
-  width:32px;height:32px;border-radius:50%;
-  background:rgba(74,158,255,0.2);
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--cyan));
   display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:500;color:var(--accent);
-  margin-bottom:8px;
+  font-size:16px;font-weight:800;color:#fff;
+  margin-bottom:10px;
+  box-shadow:0 0 20px rgba(108,99,255,0.4);
 }
-.patient-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
-.patient-sub{font-size:11px;color:var(--text3)}
-.patient-risk-badges{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
-.risk-badge{
-  font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;
+.patient-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px}
+.patient-meta{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.patient-risks{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.prisk{
+  font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;
+  font-family:var(--mono);
 }
-.risk-badge.low{background:rgba(45,184,122,0.15);color:var(--green)}
-.risk-badge.mod{background:rgba(239,159,39,0.15);color:var(--amber)}
-.risk-badge.high{background:rgba(224,90,90,0.15);color:var(--red)}
+.prisk.low{background:rgba(0,255,136,0.1);color:var(--green);border:0.5px solid rgba(0,255,136,0.2)}
+.prisk.mod{background:rgba(255,170,0,0.1);color:var(--amber);border:0.5px solid rgba(255,170,0,0.2)}
+.prisk.high{background:rgba(255,68,102,0.1);color:var(--red);border:0.5px solid rgba(255,68,102,0.2)}
+
+.sidebar-nav{padding:0.75rem 0;flex:1}
+.nav-group{margin-bottom:1rem}
+.nav-group-label{
+  font-size:9px;font-weight:700;color:var(--text4);
+  text-transform:uppercase;letter-spacing:0.12em;
+  padding:0 1rem;margin-bottom:4px;font-family:var(--mono);
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 1rem;font-size:13px;font-weight:600;
+  color:var(--text3);cursor:pointer;
+  border-left:2px solid transparent;
+  transition:all 0.15s;
+}
+.nav-item:hover{color:var(--text2);background:rgba(108,99,255,0.05)}
+.nav-item.active{
+  color:var(--accent);background:rgba(108,99,255,0.08);
+  border-left-color:var(--accent);
+}
+.nav-icon{font-size:14px;width:18px;text-align:center}
+
+.risk-mini{padding:1rem;border-top:0.5px solid var(--border)}
+.risk-mini-title{font-size:9px;font-weight:700;color:var(--text4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;font-family:var(--mono)}
+.rmini-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.rmini-name{font-size:11px;color:var(--text3);flex:1;font-weight:600}
+.rmini-track{flex:1;height:3px;background:var(--bg4);border-radius:2px}
+.rmini-fill{height:100%;border-radius:2px;transition:width 0.4s}
+.rmini-pct{font-size:11px;font-family:var(--mono);min-width:32px;text-align:right}
 
 /* MAIN CONTENT */
-.content{flex:1;overflow-y:auto;padding:1.5rem}
+.content{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
 
-.view{display:none}
+/* VIEWS */
+.view{display:none;padding:1.5rem;min-height:100%}
 .view.active{display:block}
 
-/* DASHBOARD VIEW */
-.dash-top{display:flex;gap:10px;margin-bottom:1rem}
-.dash-stat{
-  flex:1;padding:14px 16px;
-  border:0.5px solid var(--border);border-radius:var(--radius);
-  background:var(--bg2);
-}
-.dash-stat-label{font-size:11px;color:var(--text3);margin-bottom:4px}
-.dash-stat-val{font-size:20px;font-weight:500;color:var(--text);font-family:'DM Serif Display',serif}
+/* 3D VIEWER */
+.viewer-layout{display:grid;grid-template-columns:1fr 380px;gap:1.5rem;height:calc(100vh - 56px - 3rem)}
 
-.risk-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.5rem}
-
-.risk-card{
-  padding:16px;border:0.5px solid var(--border);border-radius:var(--radius-lg);
-  background:var(--bg2);cursor:pointer;transition:all 0.15s;
-}
-.risk-card:hover{border-color:var(--border2)}
-.risk-card.selected{border-color:var(--accent);background:var(--bg3)}
-.rc-label{font-size:11px;color:var(--text3);margin-bottom:8px}
-.rc-pct{font-size:28px;font-weight:400;font-family:'DM Serif Display',serif;margin-bottom:8px}
-.rc-bar{height:3px;background:var(--bg4);border-radius:2px;margin-bottom:8px}
-.rc-fill{height:100%;border-radius:2px;transition:width 0.4s}
-.rc-status{font-size:11px;font-weight:500}
-
-.two-panels{display:grid;grid-template-columns:1fr 340px;gap:1rem;margin-bottom:1rem}
-
-.panel{
-  border:0.5px solid var(--border);border-radius:var(--radius-lg);
-  background:var(--bg2);padding:1rem 1.25rem;
-}
-.panel-title{
-  font-size:10px;font-weight:500;color:var(--text3);
-  text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;
+.canvas-container{
+  position:relative;border-radius:16px;overflow:hidden;
+  border:0.5px solid var(--border);
+  background:radial-gradient(ellipse at center,var(--bg2),var(--bg));
 }
 
-.driver-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.driver-name{font-size:12px;color:var(--text2);min-width:140px}
-.driver-track{flex:1;height:5px;background:var(--bg4);border-radius:3px}
-.driver-fill{height:100%;border-radius:3px;transition:width 0.3s}
-.driver-pct{font-size:12px;color:var(--text);min-width:30px;text-align:right}
+canvas#three-canvas{width:100%!important;height:100%!important;display:block}
 
-.flag-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:8px 0;border-bottom:0.5px solid var(--border);font-size:12px;
+.canvas-overlay{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  pointer-events:none;
 }
-.flag-row:last-child{border-bottom:none}
-.flag-name{color:var(--text)}
-.flag-val{color:var(--text3);font-size:11px}
-.badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500}
-.badge-high{background:rgba(224,90,90,0.15);color:var(--red)}
-.badge-low{background:rgba(239,159,39,0.15);color:var(--amber)}
 
-/* LAB INPUT VIEW */
-.lab-layout{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.lab-section{margin-bottom:1.25rem}
-.lab-section-title{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;padding-bottom:6px;border-bottom:0.5px solid var(--border)}
+.canvas-title{
+  position:absolute;top:1.5rem;left:1.5rem;
+  font-size:11px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:0.1em;font-family:var(--mono);
+}
 
-.lab-slider-row{margin-bottom:16px}
-.lsr-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
-.lsr-name{font-size:13px;color:var(--text)}
-.lsr-val{font-size:13px;font-weight:500}
-.lsr-ref{font-size:10px;color:var(--text4);margin-top:3px}
+.organ-labels{position:absolute;top:0;left:0;right:0;bottom:0}
 
+.organ-label{
+  position:absolute;
+  display:flex;align-items:center;gap:6px;
+  pointer-events:auto;cursor:pointer;
+}
+.organ-dot{
+  width:8px;height:8px;border-radius:50%;
+  animation:organPulse 2s infinite;flex-shrink:0;
+}
+@keyframes organPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(108,99,255,0.4)}
+  50%{box-shadow:0 0 0 6px rgba(108,99,255,0)}
+}
+.organ-label-text{
+  font-size:11px;font-weight:700;font-family:var(--mono);
+  padding:3px 8px;border-radius:6px;
+  background:rgba(8,8,18,0.85);
+  border:0.5px solid var(--border2);
+  backdrop-filter:blur(10px);
+  white-space:nowrap;
+  transition:all 0.2s;
+}
+.organ-label:hover .organ-label-text{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+
+.canvas-legend{
+  position:absolute;bottom:1.5rem;left:1.5rem;
+  display:flex;gap:12px;
+}
+.legend-item{
+  display:flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:600;color:var(--text3);font-family:var(--mono);
+}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+
+/* RIGHT PANEL */
+.right-panel{display:flex;flex-direction:column;gap:1rem;overflow-y:auto;scrollbar-width:none}
+.right-panel::-webkit-scrollbar{display:none}
+
+.rpanel{
+  border:0.5px solid var(--border);border-radius:14px;
+  background:var(--bg2);padding:1.25rem;
+  position:relative;overflow:hidden;
+}
+.rpanel::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:0.5;
+}
+.rpanel-title{
+  font-size:10px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:0.1em;
+  margin-bottom:14px;font-family:var(--mono);
+}
+
+/* GAUGE */
+.gauges-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gauge-wrap{text-align:center}
+.gauge-svg{width:90px;height:55px;overflow:visible;display:block;margin:0 auto}
+.gauge-label{font-size:10px;font-weight:700;color:var(--text3);margin-top:4px;font-family:var(--mono)}
+.gauge-pct{font-size:16px;font-weight:800;font-family:var(--mono)}
+.gauge-status{font-size:9px;font-weight:600;margin-top:2px}
+
+/* SYMPTOM PANEL */
+.symptom-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.symptom-chip{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 8px;border-radius:8px;
+  border:0.5px solid var(--border);
+  background:var(--bg3);cursor:pointer;
+  transition:all 0.15s;font-size:11px;font-weight:600;color:var(--text3);
+}
+.symptom-chip:hover{border-color:var(--border2);color:var(--text2)}
+.symptom-chip.active{
+  border-color:var(--accent);background:rgba(108,99,255,0.1);color:var(--accent);
+}
+.symptom-dot{width:6px;height:6px;border-radius:50%;background:var(--text4);flex-shrink:0;transition:background 0.15s}
+.symptom-chip.active .symptom-dot{background:var(--accent);box-shadow:0 0 6px var(--accent)}
+
+/* LABS VIEW */
+.labs-layout{display:grid;grid-template-columns:1fr 320px;gap:1.5rem}
+.labs-panels{display:flex;flex-direction:column;gap:1rem}
+
+.lab-panel{border:0.5px solid var(--border);border-radius:14px;background:var(--bg2);padding:1.25rem}
+.lab-panel-title{
+  font-size:10px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:0.1em;
+  margin-bottom:1rem;font-family:var(--mono);
+  display:flex;align-items:center;gap:8px;
+}
+.lab-panel-title::after{content:'';flex:1;height:0.5px;background:var(--border)}
+
+.lab-row{margin-bottom:1rem}
+.lab-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.lab-name{font-size:13px;font-weight:600;color:var(--text)}
+.lab-val-display{font-size:13px;font-weight:700;font-family:var(--mono)}
+.lab-ref{font-size:10px;color:var(--text4);margin-top:2px;font-family:var(--mono)}
+
+.lab-slider-wrap{position:relative}
 input[type=range]{
   width:100%;height:4px;border-radius:2px;
-  outline:none;cursor:pointer;accent-color:var(--accent);
+  outline:none;cursor:pointer;
+  -webkit-appearance:none;appearance:none;
   background:var(--bg4);
 }
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;
+  border-radius:50%;background:var(--accent);
+  cursor:pointer;box-shadow:0 0 8px rgba(108,99,255,0.6);
+  border:2px solid var(--bg);
+}
+input[type=range]::-moz-range-thumb{
+  width:14px;height:14px;border-radius:50%;
+  background:var(--accent);cursor:pointer;border:none;
+}
 
-.live-panel{border:0.5px solid var(--border);border-radius:var(--radius-lg);background:var(--bg2);padding:1.25rem;position:sticky;top:0}
-
-.live-row{margin-bottom:12px}
-.live-header{display:flex;justify-content:space-between;margin-bottom:4px}
-.live-name{font-size:12px;color:var(--text2)}
-.live-pct{font-size:12px;font-weight:500}
-.live-track{height:4px;background:var(--bg4);border-radius:2px}
-.live-fill{height:100%;border-radius:2px;transition:width 0.2s}
+/* LIVE SIDEBAR PANEL */
+.live-sidebar{
+  border:0.5px solid var(--border);border-radius:14px;
+  background:var(--bg2);padding:1.25rem;
+  position:sticky;top:0;
+}
+.live-risk-row{margin-bottom:12px}
+.lrr-header{display:flex;justify-content:space-between;margin-bottom:5px}
+.lrr-name{font-size:12px;font-weight:700;color:var(--text2)}
+.lrr-pct{font-size:13px;font-weight:800;font-family:var(--mono)}
+.lrr-bar{height:5px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.lrr-fill{height:100%;border-radius:3px;transition:width 0.3s;position:relative}
+.lrr-fill::after{
+  content:'';position:absolute;top:0;right:0;bottom:0;width:20px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3));
+}
 
 /* HISTORY VIEW */
 .history-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.chart-wrap{position:relative;width:100%;height:200px}
+.hcard{border:0.5px solid var(--border);border-radius:14px;background:var(--bg2);padding:1.25rem}
+.hcard-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;font-family:var(--mono)}
+.chart-wrap{position:relative;width:100%;height:180px}
 
-/* INSIGHTS VIEW */
+/* COMPARISON VIEW */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.compare-patient{border:0.5px solid var(--border);border-radius:14px;background:var(--bg2);padding:1.25rem}
+.cp-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding-bottom:1rem;border-bottom:0.5px solid var(--border)}
+.cp-avatar{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff}
+.cp-name{font-size:14px;font-weight:700;color:var(--text)}
+.cp-meta{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.cp-inputs{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:1rem}
+.cp-row{display:flex;align-items:center;gap:8px}
+.cp-label{font-size:11px;color:var(--text3);min-width:120px;font-weight:600}
+.cp-val{font-size:11px;font-family:var(--mono);font-weight:700;min-width:50px;text-align:right}
+.compare-chart-wrap{position:relative;width:100%;height:200px}
+
+/* INSIGHTS */
 .insight-card{
-  border:0.5px solid var(--border);border-radius:var(--radius-lg);
+  border:0.5px solid var(--border);border-radius:14px;
   background:var(--bg2);padding:1.25rem;margin-bottom:1rem;
-  display:flex;gap:1rem;
+  display:flex;gap:1rem;position:relative;overflow:hidden;
 }
-.insight-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
-.insight-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
-.insight-body{font-size:13px;color:var(--text2);line-height:1.65}
+.insight-accent{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.insight-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.insight-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.insight-body{font-size:12px;color:var(--text2);line-height:1.65}
+.insight-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.itag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;font-family:var(--mono)}
 
-.ref-card{border:0.5px solid var(--border);border-radius:var(--radius-lg);background:var(--bg2);padding:1.25rem}
-.ref-item{font-size:12px;color:var(--text2);padding:6px 0;border-bottom:0.5px solid var(--border)}
-.ref-item:last-child{border-bottom:none}
+/* INTERVENTION SIMULATOR */
+.simulator{
+  border:0.5px solid var(--border);border-radius:14px;
+  background:var(--bg2);padding:1.25rem;margin-bottom:1rem;
+}
+.sim-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;font-family:var(--mono)}
+.sim-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.sim-label{font-size:12px;font-weight:600;color:var(--text2);min-width:140px}
+.sim-slider{flex:1}
+.sim-delta{font-size:12px;font-family:var(--mono);font-weight:700;min-width:50px;text-align:right}
+.sim-results{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border)}
+.sim-result{text-align:center;padding:10px;background:var(--bg3);border-radius:10px;border:0.5px solid var(--border)}
+.sim-result-name{font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);margin-bottom:4px}
+.sim-result-val{font-size:16px;font-weight:800;font-family:var(--mono)}
+.sim-result-delta{font-size:10px;font-family:var(--mono);margin-top:2px}
 
-@media(max-width:900px){
+/* NARRATIVE */
+.narrative{
+  border:0.5px solid var(--border);border-radius:14px;
+  background:var(--bg2);padding:1.25rem;margin-bottom:1rem;
+  position:relative;overflow:hidden;
+}
+.narrative::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,var(--cyan),var(--accent),var(--pink));
+}
+.narrative-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.narrative-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;font-family:var(--mono)}
+.narrative-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(0,212,255,0.1);color:var(--cyan);border:0.5px solid rgba(0,212,255,0.2);font-family:var(--mono)}
+.narrative-text{font-size:13px;color:var(--text2);line-height:1.8}
+.narrative-text strong{color:var(--text);font-weight:700}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glow{0%,100%{opacity:0.5}50%{opacity:1}}
+
+.fade-up{animation:fadeUp 0.4s ease forwards}
+
+/* SCROLLBAR */
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-track{background:transparent}
+.content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+@media(max-width:1000px){
   .sidebar{display:none}
-  .risk-grid{grid-template-columns:repeat(2,1fr)}
-  .two-panels{grid-template-columns:1fr}
-  .lab-layout{grid-template-columns:1fr}
+  .viewer-layout{grid-template-columns:1fr}
+  .labs-layout{grid-template-columns:1fr}
   .history-grid{grid-template-columns:1fr}
+  .compare-grid{grid-template-columns:1fr}
+  .sim-results{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="topbar-left">
-    <a href="index.html" class="logo">Endo<span>Risk</span></a>
-    <div class="breadcrumb">
-      <a href="index.html">Home</a> › Dashboard
-    </div>
+  <a href="index.html" class="logo">ENDORISK</a>
+  <div class="topbar-center">
+    <button class="tab-btn active" onclick="switchView('viewer',this)">3D Model</button>
+    <button class="tab-btn" onclick="switchView('labs',this)">Lab Input</button>
+    <button class="tab-btn" onclick="switchView('history',this)">History</button>
+    <button class="tab-btn" onclick="switchView('compare',this)">Compare</button>
+    <button class="tab-btn" onclick="switchView('insights',this)">Insights</button>
   </div>
   <div class="topbar-right">
-    <a href="report.html" class="topbar-btn">📋 Generate report</a>
-    <a href="index.html" class="topbar-btn">← Back to home</a>
+    <span class="chip">v2.0 · RESEARCH</span>
+    <a href="report.html" class="top-btn accent">Generate Report</a>
+    <a href="index.html" class="top-btn">← Home</a>
   </div>
 </div>
 
 <div class="app-body">
   <div class="sidebar">
-    <div class="patient-card">
-      <div class="patient-avatar">AS</div>
+    <div class="patient-hero">
+      <div class="patient-avatar">SP</div>
       <div class="patient-name">Sample Patient</div>
-      <div class="patient-sub">Age 34 · Female</div>
-      <div class="patient-risk-badges">
-        <span class="risk-badge low" id="sb-thyroid">Thyroid ↓</span>
-        <span class="risk-badge mod" id="sb-diabetes">T2DM ↑</span>
-        <span class="risk-badge mod" id="sb-metabolic">MetS ↑</span>
-        <span class="risk-badge low" id="sb-adrenal">Adrenal ↓</span>
+      <div class="patient-meta">F · Age 34 · Visit 1</div>
+      <div class="patient-risks" id="sidebar-risks"></div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-group-label">Views</div>
+        <div class="nav-item active" onclick="switchView('viewer',null,this)"><span class="nav-icon">⬡</span>3D Model</div>
+        <div class="nav-item" onclick="switchView('labs',null,this)"><span class="nav-icon">🧪</span>Lab Input</div>
+        <div class="nav-item" onclick="switchView('history',null,this)"><span class="nav-icon">📈</span>History</div>
+        <div class="nav-item" onclick="switchView('compare',null,this)"><span class="nav-icon">⚖️</span>Compare</div>
+        <div class="nav-item" onclick="switchView('insights',null,this)"><span class="nav-icon">🔬</span>Insights</div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Export</div>
+        <div class="nav-item" onclick="window.location.href='report.html'"><span class="nav-icon">📋</span>Clinical Report</div>
+        <div class="nav-item" onclick="window.location.href='about.html'"><span class="nav-icon">📚</span>Methodology</div>
       </div>
     </div>
 
-    <div class="sidebar-section">
-      <div class="sidebar-label">Views</div>
-      <div class="sidebar-item active" onclick="switchView('dashboard',this)">
-        <span class="sidebar-icon">⬡</span> Dashboard
-      </div>
-      <div class="sidebar-item" onclick="switchView('labs',this)">
-        <span class="sidebar-icon">🧪</span> Lab input
-      </div>
-      <div class="sidebar-item" onclick="switchView('history',this)">
-        <span class="sidebar-icon">📈</span> History
-      </div>
-      <div class="sidebar-item" onclick="switchView('insights',this)">
-        <span class="sidebar-icon">🔬</span> Insights
-      </div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-label">Reports</div>
-      <div class="sidebar-item" onclick="window.location.href='report.html'">
-        <span class="sidebar-icon">📋</span> Clinical report
-      </div>
-      <div class="sidebar-item" onclick="window.location.href='about.html'">
-        <span class="sidebar-icon">📚</span> Methodology
-      </div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-label">Project</div>
-      <div class="sidebar-item" onclick="window.location.href='index.html'">
-        <span class="sidebar-icon">🏠</span> Home
-      </div>
+    <div class="risk-mini">
+      <div class="risk-mini-title">Live Risk Scores</div>
+      <div id="sidebar-risk-bars"></div>
     </div>
   </div>
 
   <div class="content">
 
-    <!-- DASHBOARD VIEW -->
-    <div class="view active" id="view-dashboard">
-      <div class="dash-top">
-        <div class="dash-stat">
-          <div class="dash-stat-label">Conditions monitored</div>
-          <div class="dash-stat-val">4</div>
+    <!-- 3D VIEWER VIEW -->
+    <div class="view active" id="view-viewer">
+      <div class="viewer-layout">
+        <div class="canvas-container">
+          <canvas id="three-canvas"></canvas>
+          <div class="canvas-overlay">
+            <div class="canvas-title">ENDOCRINE SYSTEM · 3D RISK VISUALIZATION</div>
+            <div class="organ-labels" id="organ-labels"></div>
+            <div class="canvas-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Low risk</div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Moderate</div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Elevated</div>
+            </div>
+          </div>
         </div>
-        <div class="dash-stat">
-          <div class="dash-stat-label">Active biomarkers</div>
-          <div class="dash-stat-val">12</div>
-        </div>
-        <div class="dash-stat">
-          <div class="dash-stat-label">Flagged values</div>
-          <div class="dash-stat-val" id="stat-flags">0</div>
-        </div>
-        <div class="dash-stat">
-          <div class="dash-stat-label">Highest risk</div>
-          <div class="dash-stat-val" id="stat-highest">—</div>
-        </div>
-      </div>
 
-      <div class="risk-grid" id="risk-cards"></div>
+        <div class="right-panel">
+          <!-- GAUGES -->
+          <div class="rpanel">
+            <div class="rpanel-title">Risk Gauges</div>
+            <div class="gauges-grid" id="gauge-grid"></div>
+          </div>
 
-      <div class="two-panels">
-        <div class="panel">
-          <div class="panel-title" id="detail-title">Select a condition above</div>
-          <div id="detail-drivers"></div>
-        </div>
-        <div class="panel">
-          <div class="panel-title">Flagged lab values</div>
-          <div id="flag-list"></div>
+          <!-- SYMPTOMS -->
+          <div class="rpanel">
+            <div class="rpanel-title">Symptom Input <span style="color:var(--text4);font-size:9px;font-family:var(--mono)">(affects risk scores)</span></div>
+            <div class="symptom-grid" id="symptom-grid"></div>
+          </div>
+
+          <!-- RADAR -->
+          <div class="rpanel">
+            <div class="rpanel-title">Biomarker Profile</div>
+            <div style="position:relative;width:100%;height:200px"><canvas id="radar-chart" role="img" aria-label="Biomarker radar chart"></canvas></div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- LAB INPUT VIEW -->
+    <!-- LABS VIEW -->
     <div class="view" id="view-labs">
-      <div class="lab-layout">
-        <div>
-          <div class="panel" style="margin-bottom:1rem">
-            <div class="lab-section-title">Thyroid panel</div>
-            <div id="slider-tsh"></div>
-            <div id="slider-t4"></div>
-            <div id="slider-t3"></div>
+      <div class="labs-layout">
+        <div class="labs-panels">
+          <div class="lab-panel">
+            <div class="lab-panel-title">🫀 Thyroid Panel</div>
+            <div id="lab-tsh"></div><div id="lab-t4"></div><div id="lab-t3"></div>
           </div>
-          <div class="panel" style="margin-bottom:1rem">
-            <div class="lab-section-title">Metabolic panel</div>
-            <div id="slider-glucose"></div>
-            <div id="slider-hba1c"></div>
-            <div id="slider-insulin"></div>
-            <div id="slider-bmi"></div>
+          <div class="lab-panel">
+            <div class="lab-panel-title">🩸 Metabolic Panel</div>
+            <div id="lab-glucose"></div><div id="lab-hba1c"></div><div id="lab-insulin"></div><div id="lab-bmi"></div>
           </div>
-          <div class="panel" style="margin-bottom:1rem">
-            <div class="lab-section-title">Adrenal / hormonal</div>
-            <div id="slider-cortisol"></div>
-            <div id="slider-acth"></div>
-            <div id="slider-dhea"></div>
+          <div class="lab-panel">
+            <div class="lab-panel-title">⚡ Adrenal / Hormonal</div>
+            <div id="lab-cortisol"></div><div id="lab-acth"></div><div id="lab-dhea"></div>
           </div>
-          <div class="panel">
-            <div class="lab-section-title">Lipid panel</div>
-            <div id="slider-trig"></div>
-            <div id="slider-hdl"></div>
+          <div class="lab-panel">
+            <div class="lab-panel-title">💧 Lipid Panel</div>
+            <div id="lab-trig"></div><div id="lab-hdl"></div>
           </div>
         </div>
-        <div>
-          <div class="live-panel">
-            <div class="panel-title">Live risk scores</div>
-            <div id="live-risk"></div>
-            <div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border)">
-              <div class="panel-title">Lab status</div>
-              <div id="live-flags"></div>
-            </div>
+        <div class="live-sidebar">
+          <div class="rpanel-title">Live Risk Preview</div>
+          <div id="live-risk-bars"></div>
+          <div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border)">
+            <div class="rpanel-title">Flagged Values</div>
+            <div id="live-flags"></div>
           </div>
         </div>
       </div>
@@ -352,248 +527,846 @@ input[type=range]{
     <!-- HISTORY VIEW -->
     <div class="view" id="view-history">
       <div class="history-grid">
-        <div class="panel">
-          <div class="panel-title">Diabetes risk — 6 visits</div>
-          <div class="chart-wrap"><canvas id="hc-diabetes" role="img" aria-label="Diabetes risk over 6 visits"></canvas></div>
-        </div>
-        <div class="panel">
-          <div class="panel-title">Thyroid dysfunction risk — 6 visits</div>
-          <div class="chart-wrap"><canvas id="hc-thyroid" role="img" aria-label="Thyroid risk over 6 visits"></canvas></div>
-        </div>
-        <div class="panel">
-          <div class="panel-title">Metabolic syndrome risk — 6 visits</div>
-          <div class="chart-wrap"><canvas id="hc-metabolic" role="img" aria-label="Metabolic risk over 6 visits"></canvas></div>
-        </div>
-        <div class="panel">
-          <div class="panel-title">Adrenal insufficiency risk — 6 visits</div>
-          <div class="chart-wrap"><canvas id="hc-adrenal" role="img" aria-label="Adrenal risk over 6 visits"></canvas></div>
-        </div>
+        <div class="hcard"><div class="hcard-title">Diabetes Risk · 6 Visits</div><div class="chart-wrap"><canvas id="hc-d" role="img" aria-label="Diabetes history"></canvas></div></div>
+        <div class="hcard"><div class="hcard-title">Thyroid Risk · 6 Visits</div><div class="chart-wrap"><canvas id="hc-t" role="img" aria-label="Thyroid history"></canvas></div></div>
+        <div class="hcard"><div class="hcard-title">Metabolic Syndrome · 6 Visits</div><div class="chart-wrap"><canvas id="hc-m" role="img" aria-label="Metabolic history"></canvas></div></div>
+        <div class="hcard"><div class="hcard-title">Adrenal Insufficiency · 6 Visits</div><div class="chart-wrap"><canvas id="hc-a" role="img" aria-label="Adrenal history"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- COMPARE VIEW -->
+    <div class="view" id="view-compare">
+      <div class="compare-grid">
+        <div class="compare-patient" id="compare-p1"></div>
+        <div class="compare-patient" id="compare-p2"></div>
+      </div>
+      <div style="margin-top:1rem;border:0.5px solid var(--border);border-radius:14px;background:var(--bg2);padding:1.25rem">
+        <div class="rpanel-title">Side-by-Side Risk Comparison</div>
+        <div style="position:relative;width:100%;height:260px"><canvas id="compare-chart" role="img" aria-label="Comparison chart"></canvas></div>
       </div>
     </div>
 
     <!-- INSIGHTS VIEW -->
     <div class="view" id="view-insights">
-      <div id="insights-list"></div>
-      <div class="ref-card">
-        <div class="panel-title">Clinical references</div>
-        <div class="ref-item">· PIMA Indians Diabetes Dataset — Smith et al. (1988), NIDDK</div>
-        <div class="ref-item">· ATA thyroid reference ranges — Jonklaas et al. (2014), <em>Thyroid</em></div>
-        <div class="ref-item">· Metabolic syndrome criteria — NCEP ATP III / IDF consensus (2009)</div>
-        <div class="ref-item">· Adrenal insufficiency — Bornstein et al. (2016), <em>JCEM</em></div>
-        <div class="ref-item">· HbA1c diagnostic cutoffs — ADA Standards of Medical Care (2024)</div>
+      <div class="narrative" id="narrative-box"></div>
+      <div class="simulator">
+        <div class="sim-title">⚡ Intervention Simulator — "What If?"</div>
+        <div id="sim-sliders"></div>
+        <div class="sim-results" id="sim-results"></div>
       </div>
+      <div id="insights-list"></div>
     </div>
 
   </div>
 </div>
 
 <script>
+// ============================================================
+// DATA
+// ============================================================
 const labs={
-  tsh:{name:'TSH',unit:'mIU/L',min:0.4,max:6,val:2.1,refLow:0.4,refHigh:4.0,step:0.1},
-  t4:{name:'Free T4',unit:'ng/dL',min:0.3,max:2.5,val:1.1,refLow:0.8,refHigh:1.8,step:0.05},
-  t3:{name:'Free T3',unit:'pg/mL',min:1,max:6,val:2.9,refLow:2.3,refHigh:4.2,step:0.1},
-  glucose:{name:'Fasting glucose',unit:'mg/dL',min:60,max:300,val:95,refLow:70,refHigh:99,step:1},
-  hba1c:{name:'HbA1c',unit:'%',min:4,max:12,val:5.4,refLow:4,refHigh:5.6,step:0.1},
-  insulin:{name:'Fasting insulin',unit:'μU/mL',min:2,max:80,val:8,refLow:2,refHigh:25,step:1},
-  bmi:{name:'BMI',unit:'kg/m²',min:16,max:50,val:26,refLow:18.5,refHigh:24.9,step:0.5},
-  cortisol:{name:'AM cortisol',unit:'μg/dL',min:2,max:40,val:14,refLow:6,refHigh:23,step:0.5},
-  acth:{name:'ACTH',unit:'pg/mL',min:5,max:120,val:28,refLow:10,refHigh:60,step:1},
-  dhea:{name:'DHEA-S',unit:'μg/dL',min:30,max:500,val:220,refLow:80,refHigh:430,step:5},
-  trig:{name:'Triglycerides',unit:'mg/dL',min:50,max:500,val:130,refLow:50,refHigh:149,step:5},
-  hdl:{name:'HDL cholesterol',unit:'mg/dL',min:20,max:100,val:52,refLow:40,refHigh:100,step:1}
+  tsh:{name:'TSH',unit:'mIU/L',min:0.1,max:8,val:2.1,refLow:0.4,refHigh:4.0,step:0.1},
+  t4:{name:'Free T4',unit:'ng/dL',min:0.3,max:3,val:1.1,refLow:0.8,refHigh:1.8,step:0.05},
+  t3:{name:'Free T3',unit:'pg/mL',min:1,max:7,val:2.9,refLow:2.3,refHigh:4.2,step:0.1},
+  glucose:{name:'Fasting Glucose',unit:'mg/dL',min:60,max:350,val:95,refLow:70,refHigh:99,step:1},
+  hba1c:{name:'HbA1c',unit:'%',min:4,max:14,val:5.4,refLow:4,refHigh:5.6,step:0.1},
+  insulin:{name:'Fasting Insulin',unit:'μU/mL',min:2,max:100,val:8,refLow:2,refHigh:25,step:1},
+  bmi:{name:'BMI',unit:'kg/m²',min:14,max:55,val:26,refLow:18.5,refHigh:24.9,step:0.5},
+  cortisol:{name:'AM Cortisol',unit:'μg/dL',min:1,max:45,val:14,refLow:6,refHigh:23,step:0.5},
+  acth:{name:'ACTH',unit:'pg/mL',min:5,max:150,val:28,refLow:10,refHigh:60,step:1},
+  dhea:{name:'DHEA-S',unit:'μg/dL',min:20,max:600,val:220,refLow:80,refHigh:430,step:5},
+  trig:{name:'Triglycerides',unit:'mg/dL',min:40,max:600,val:130,refLow:50,refHigh:149,step:5},
+  hdl:{name:'HDL Cholesterol',unit:'mg/dL',min:15,max:110,val:52,refLow:40,refHigh:100,step:1}
 };
 
-const conditions=[
-  {id:'thyroid',name:'Thyroid dysfunction',short:'Thyroid',drivers:[{name:'TSH level',key:'tsh',dir:1},{name:'Free T4',key:'t4',dir:-1},{name:'Free T3',key:'t3',dir:-1}]},
-  {id:'diabetes',name:'Type 2 diabetes',short:'T2DM',drivers:[{name:'Fasting glucose',key:'glucose',dir:1},{name:'HbA1c',key:'hba1c',dir:1},{name:'BMI',key:'bmi',dir:1},{name:'Fasting insulin',key:'insulin',dir:1}]},
-  {id:'metabolic',name:'Metabolic syndrome',short:'MetS',drivers:[{name:'Triglycerides',key:'trig',dir:1},{name:'HDL (inverse)',key:'hdl',dir:-1},{name:'BMI',key:'bmi',dir:1},{name:'Fasting glucose',key:'glucose',dir:1}]},
-  {id:'adrenal',name:'Adrenal insufficiency',short:'Adrenal',drivers:[{name:'AM cortisol',key:'cortisol',dir:-1},{name:'ACTH',key:'acth',dir:-1},{name:'DHEA-S',key:'dhea',dir:-1}]}
+const symptoms=[
+  {id:'fatigue',label:'Fatigue',conditions:['thyroid','adrenal'],weight:0.06},
+  {id:'weightGain',label:'Weight gain',conditions:['thyroid','metabolic'],weight:0.07},
+  {id:'coldIntolerance',label:'Cold intolerance',conditions:['thyroid'],weight:0.09},
+  {id:'polyuria',label:'Frequent urination',conditions:['diabetes'],weight:0.08},
+  {id:'polydipsia',label:'Excessive thirst',conditions:['diabetes'],weight:0.08},
+  {id:'blurredVision',label:'Blurred vision',conditions:['diabetes'],weight:0.07},
+  {id:'heatIntolerance',label:'Heat intolerance',conditions:['thyroid'],weight:0.08},
+  {id:'palpitations',label:'Palpitations',conditions:['thyroid'],weight:0.07},
+  {id:'hypotension',label:'Low blood pressure',conditions:['adrenal'],weight:0.09},
+  {id:'hyperpigmentation',label:'Skin darkening',conditions:['adrenal'],weight:0.1},
+  {id:'nausea',label:'Nausea/vomiting',conditions:['adrenal'],weight:0.06},
+  {id:'abdominalObesity',label:'Abdominal obesity',conditions:['metabolic','diabetes'],weight:0.08},
 ];
 
-let selectedCondition=0;
+const activeSymptoms=new Set();
 
+const conditions=[
+  {id:'thyroid',name:'Thyroid',color:'#00d4ff',organ:'thyroid'},
+  {id:'diabetes',name:'T2DM',color:'#ff4466',organ:'pancreas'},
+  {id:'metabolic',name:'Metabolic',color:'#ffaa00',organ:'liver'},
+  {id:'adrenal',name:'Adrenal',color:'#00ff88',organ:'adrenal'}
+];
+
+// ============================================================
+// RISK ENGINE
+// ============================================================
 function sig(x){return 1/(1+Math.exp(-x))}
+
 function getRisks(){
   const v=labs;
+  // symptom bonuses
+  let thyBonus=0,diabBonus=0,metBonus=0,adrBonus=0;
+  activeSymptoms.forEach(sid=>{
+    const s=symptoms.find(x=>x.id===sid);
+    if(!s)return;
+    if(s.conditions.includes('thyroid'))thyBonus+=s.weight;
+    if(s.conditions.includes('diabetes'))diabBonus+=s.weight;
+    if(s.conditions.includes('metabolic'))metBonus+=s.weight;
+    if(s.conditions.includes('adrenal'))adrBonus+=s.weight;
+  });
+
   const tshZ=(v.tsh.val-2.2)/1.2,t4Z=(1.3-v.t4.val)/0.3,t3Z=(3.2-v.t3.val)/0.6;
-  const thyroid=Math.round(sig(tshZ*1.2+t4Z*0.8+t3Z*0.6-0.5)*100);
+  const thyroid=Math.min(99,Math.round((sig(tshZ*1.2+t4Z*0.8+t3Z*0.6-0.5)+thyBonus)*100));
+
   const gZ=(v.glucose.val-90)/20,hZ=(v.hba1c.val-5.4)/0.6,bZ=(v.bmi.val-25)/5,iZ=(v.insulin.val-10)/8;
-  const diabetes=Math.round(sig(gZ*1.4+hZ*1.1+bZ*0.7+iZ*0.5-0.8)*100);
+  const diabetes=Math.min(99,Math.round((sig(gZ*1.4+hZ*1.1+bZ*0.7+iZ*0.5-0.8)+diabBonus)*100));
+
   const trZ=(v.trig.val-130)/50,hdlZ=(50-v.hdl.val)/15,bZ2=(v.bmi.val-27)/5,gZ2=(v.glucose.val-95)/20;
-  const metabolic=Math.round(sig(trZ*1.0+hdlZ*0.9+bZ2*0.8+gZ2*0.7-0.6)*100);
+  const metabolic=Math.min(99,Math.round((sig(trZ*1.0+hdlZ*0.9+bZ2*0.8+gZ2*0.7-0.6)+metBonus)*100));
+
   const cZ=(12-v.cortisol.val)/5,aZ=(35-v.acth.val)/15,dZ=(200-v.dhea.val)/80;
-  const adrenal=Math.round(sig(cZ*1.3+aZ*0.9+dZ*0.5-0.4)*100);
+  const adrenal=Math.min(99,Math.round((sig(cZ*1.3+aZ*0.9+dZ*0.5-0.4)+adrBonus)*100));
+
   return{thyroid,diabetes,metabolic,adrenal};
 }
 
 function riskColor(p){
-  if(p<25)return{text:'#2db87a',bar:'#2db87a',label:'Low risk',cls:'low'};
-  if(p<50)return{text:'#EF9F27',bar:'#EF9F27',label:'Moderate risk',cls:'mod'};
-  if(p<75)return{text:'#e05a5a',bar:'#e05a5a',label:'Elevated risk',cls:'high'};
-  return{text:'#e05a5a',bar:'#e05a5a',label:'High risk',cls:'high'};
+  if(p<25)return{text:'#00ff88',bar:'#00ff88',label:'Low',cls:'low'};
+  if(p<50)return{text:'#ffaa00',bar:'#ffaa00',label:'Moderate',cls:'mod'};
+  if(p<75)return{text:'#ff4466',bar:'#ff4466',label:'Elevated',cls:'high'};
+  return{text:'#ff4466',bar:'#ff4466',label:'High',cls:'high'};
 }
 
 function labStatus(k){const l=labs[k];return l.val<l.refLow?'low':l.val>l.refHigh?'high':'normal'}
 
-function renderRiskCards(){
-  const r=getRisks();
-  const vals=[r.thyroid,r.diabetes,r.metabolic,r.adrenal];
-  document.getElementById('risk-cards').innerHTML=conditions.map((c,i)=>{
-    const p=vals[i],col=riskColor(p);
-    return`<div class="risk-card${i===selectedCondition?' selected':''}" onclick="selectCondition(${i})">
-      <div class="rc-label">${c.name}</div>
-      <div class="rc-pct" style="color:${col.text}">${p}%</div>
-      <div class="rc-bar"><div class="rc-fill" style="width:${p}%;background:${col.bar}"></div></div>
-      <div class="rc-status" style="color:${col.text}">${col.label}</div>
-    </div>`;
-  }).join('');
+// ============================================================
+// THREE.JS 3D MODEL
+// ============================================================
+let scene,camera,renderer,organMeshes={},animFrame;
+const organDefs=[
+  {id:'thyroid',name:'Thyroid',x:0,y:1.2,z:0.3,rx:0.1,ry:0.1,rz:0,sx:0.35,sy:0.18,sz:0.12,shape:'thyroid'},
+  {id:'pancreas',name:'Pancreas',x:-0.3,y:0,z:0.2,rx:0.2,ry:-0.3,rz:0.2,sx:0.5,sy:0.12,sz:0.1,shape:'elongated'},
+  {id:'adrenal',name:'Adrenal (L)',x:-0.55,y:0.55,z:0.1,rx:0,ry:0,rz:0.3,sx:0.1,sy:0.14,sz:0.08,shape:'pyramid'},
+  {id:'adrenal2',name:'Adrenal (R)',x:0.55,y:0.55,z:0.1,rx:0,ry:0,rz:-0.3,sx:0.1,sy:0.14,sz:0.08,shape:'pyramid'},
+  {id:'liver',name:'Liver',x:0.4,y:0.15,z:0.15,rx:0,ry:0,rz:0,sx:0.42,sy:0.28,sz:0.18,shape:'rounded'},
+  {id:'pituitary',name:'Pituitary',x:0,y:2.05,z:0.05,rx:0,ry:0,rz:0,sx:0.07,sy:0.07,sz:0.07,shape:'sphere'},
+  {id:'gonads',name:'Gonads',x:0,y:-1.1,z:0.1,rx:0,ry:0,rz:0,sx:0.12,sy:0.1,sz:0.1,shape:'sphere'},
+];
 
-  // update stats
-  const flags=Object.keys(labs).filter(k=>labStatus(k)!=='normal').length;
-  document.getElementById('stat-flags').textContent=flags;
-  const maxIdx=vals.indexOf(Math.max(...vals));
-  document.getElementById('stat-highest').textContent=Math.max(...vals)+'%';
+function initThree(){
+  const container=document.getElementById('three-canvas');
+  const parent=container.parentElement;
+  const W=parent.offsetWidth,H=parent.offsetHeight;
 
-  // sidebar badges
-  const ids=['thyroid','diabetes','metabolic','adrenal'];
-  ids.forEach((id,i)=>{
-    const el=document.getElementById('sb-'+id);
-    if(!el)return;
-    const col=riskColor(vals[i]);
-    el.className='risk-badge '+col.cls;
-    el.textContent=conditions[i].short+' '+vals[i]+'%';
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
+  camera.position.set(0,0.3,5.5);
+
+  renderer=new THREE.WebGLRenderer({canvas:container,antialias:true,alpha:true});
+  renderer.setSize(W,H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.shadowMap.enabled=true;
+
+  // Lighting
+  const ambient=new THREE.AmbientLight(0x6c63ff,0.4);
+  scene.add(ambient);
+  const dirLight=new THREE.DirectionalLight(0xffffff,1.2);
+  dirLight.position.set(3,5,5);
+  dirLight.castShadow=true;
+  scene.add(dirLight);
+  const rimLight=new THREE.DirectionalLight(0x00d4ff,0.6);
+  rimLight.position.set(-3,-2,-3);
+  scene.add(rimLight);
+  const fillLight=new THREE.PointLight(0x6c63ff,0.8,10);
+  fillLight.position.set(0,2,3);
+  scene.add(fillLight);
+
+  // Torso outline (body shape)
+  buildBody();
+
+  // Organs
+  organDefs.forEach(o=>buildOrgan(o));
+
+  // Particles
+  buildParticles();
+
+  // Grid floor
+  const gridHelper=new THREE.GridHelper(8,20,0x6c63ff,0x111122);
+  gridHelper.position.y=-2.5;
+  gridHelper.material.opacity=0.3;
+  gridHelper.material.transparent=true;
+  scene.add(gridHelper);
+
+  animate();
+  updateOrganColors();
+
+  window.addEventListener('resize',()=>{
+    const W=parent.offsetWidth,H=parent.offsetHeight;
+    camera.aspect=W/H;
+    camera.updateProjectionMatrix();
+    renderer.setSize(W,H);
   });
 }
 
-function renderDetail(){
-  const c=conditions[selectedCondition];
-  document.getElementById('detail-title').textContent=c.name+' — risk drivers';
-  document.getElementById('detail-drivers').innerHTML=c.drivers.map(d=>{
-    const l=labs[d.key];
-    const norm=(l.val-l.refLow)/(l.refHigh-l.refLow);
-    const contrib=Math.max(0,Math.min(1,d.dir===1?norm:1-norm));
-    const w=Math.round(contrib*100);
-    const col=contrib>0.7?'#e05a5a':contrib>0.4?'#EF9F27':'#2db87a';
-    return`<div class="driver-row">
-      <span class="driver-name">${d.name}</span>
-      <div class="driver-track"><div class="driver-fill" style="width:${w}%;background:${col}"></div></div>
-      <span class="driver-pct">${w}%</span>
+function buildBody(){
+  // Torso wireframe
+  const torsoGeo=new THREE.CapsuleGeometry?
+    new THREE.CapsuleGeometry(0.72,2.2,8,16):
+    new THREE.CylinderGeometry(0.72,0.6,2.2,16);
+  const torsoMat=new THREE.MeshPhongMaterial({
+    color:0x1a1a2e,wireframe:false,
+    transparent:true,opacity:0.15,
+    side:THREE.DoubleSide
+  });
+  const torso=new THREE.Mesh(torsoGeo,torsoMat);
+  torso.position.y=0.1;
+  scene.add(torso);
+
+  // Torso wireframe outline
+  const wireGeo=new THREE.CylinderGeometry(0.73,0.61,2.22,16);
+  const wireMat=new THREE.MeshBasicMaterial({
+    color:0x6c63ff,wireframe:true,transparent:true,opacity:0.08
+  });
+  const wire=new THREE.Mesh(wireGeo,wireMat);
+  wire.position.y=0.1;
+  scene.add(wire);
+
+  // Head
+  const headGeo=new THREE.SphereGeometry(0.38,16,16);
+  const headMat=new THREE.MeshPhongMaterial({color:0x1a1a2e,transparent:true,opacity:0.15});
+  const head=new THREE.Mesh(headGeo,headMat);
+  head.position.set(0,1.72,0);
+  scene.add(head);
+
+  // Neck
+  const neckGeo=new THREE.CylinderGeometry(0.14,0.16,0.3,8);
+  const neckMat=new THREE.MeshPhongMaterial({color:0x1a1a2e,transparent:true,opacity:0.15});
+  const neck=new THREE.Mesh(neckGeo,neckMat);
+  neck.position.set(0,1.34,0);
+  scene.add(neck);
+
+  // Spine line
+  const spinePoints=[];
+  for(let i=0;i<=20;i++){spinePoints.push(new THREE.Vector3(0,-1.1+i*0.16,0))}
+  const spineGeo=new THREE.BufferGeometry().setFromPoints(spinePoints);
+  const spineMat=new THREE.LineBasicMaterial({color:0x6c63ff,transparent:true,opacity:0.2});
+  scene.add(new THREE.Line(spineGeo,spineMat));
+
+  // Rib lines
+  for(let i=0;i<5;i++){
+    const y=-0.1+i*0.22;
+    const ribPoints=[];
+    for(let a=-Math.PI*0.7;a<=Math.PI*0.7;a+=0.1){
+      const r=0.72-i*0.02;
+      ribPoints.push(new THREE.Vector3(Math.sin(a)*r,y,Math.cos(a)*r*0.5));
+    }
+    const ribGeo=new THREE.BufferGeometry().setFromPoints(ribPoints);
+    const ribMat=new THREE.LineBasicMaterial({color:0x6c63ff,transparent:true,opacity:0.07});
+    scene.add(new THREE.Line(ribGeo,ribMat));
+  }
+}
+
+function buildOrgan(o){
+  let geo;
+  if(o.shape==='thyroid'){
+    // Two lobes for thyroid
+    const lobe1=new THREE.SphereGeometry(1,12,8);
+    const lobe2=new THREE.SphereGeometry(1,12,8);
+    geo=lobe1; // simplified
+  } else if(o.shape==='elongated'||o.shape==='thyroid'){
+    geo=new THREE.CapsuleGeometry?new THREE.CapsuleGeometry(0.5,1,6,8):new THREE.CylinderGeometry(0.5,0.4,1,8);
+  } else if(o.shape==='pyramid'){
+    geo=new THREE.ConeGeometry(0.5,1,6);
+  } else if(o.shape==='rounded'){
+    geo=new THREE.SphereGeometry(1,10,8);
+  } else {
+    geo=new THREE.SphereGeometry(1,12,10);
+  }
+
+  const mat=new THREE.MeshPhongMaterial({
+    color:0x4a43cc,
+    emissive:0x6c63ff,
+    emissiveIntensity:0.3,
+    transparent:true,
+    opacity:0.85,
+    shininess:60,
+  });
+
+  const mesh=new THREE.Mesh(geo,mat);
+  mesh.position.set(o.x,o.y,o.z);
+  mesh.rotation.set(o.rx,o.ry,o.rz);
+  mesh.scale.set(o.sx,o.sy,o.sz);
+  mesh.castShadow=true;
+  mesh.userData={id:o.id,name:o.name};
+
+  // Glow sphere
+  const glowGeo=new THREE.SphereGeometry(1.3,8,8);
+  const glowMat=new THREE.MeshBasicMaterial({
+    color:0x6c63ff,transparent:true,opacity:0.05,side:THREE.BackSide
+  });
+  const glow=new THREE.Mesh(glowGeo,glowMat);
+  mesh.add(glow);
+
+  scene.add(mesh);
+  if(!organMeshes[o.id])organMeshes[o.id]=[];
+  organMeshes[o.id].push({mesh,glow,glowMat});
+}
+
+function buildParticles(){
+  const count=200;
+  const positions=new Float32Array(count*3);
+  for(let i=0;i<count;i++){
+    positions[i*3]=(Math.random()-0.5)*8;
+    positions[i*3+1]=(Math.random()-0.5)*6;
+    positions[i*3+2]=(Math.random()-0.5)*4-2;
+  }
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.BufferAttribute(positions,3));
+  const mat=new THREE.PointsMaterial({color:0x6c63ff,size:0.02,transparent:true,opacity:0.4});
+  scene.add(new THREE.Points(geo,mat));
+}
+
+let time=0;
+function animate(){
+  animFrame=requestAnimationFrame(animate);
+  time+=0.008;
+
+  // Gentle rotation of whole scene
+  scene.rotation.y=Math.sin(time*0.3)*0.15;
+
+  // Organ pulse based on risk
+  const risks=getRisks();
+  const riskMap={thyroid:risks.thyroid,pancreas:risks.diabetes,liver:risks.metabolic,adrenal:risks.adrenal,adrenal2:risks.adrenal};
+
+  Object.entries(organMeshes).forEach(([id,arr])=>{
+    const risk=riskMap[id]||20;
+    const pulse=1+Math.sin(time*(1+risk/50))*0.04*(risk/50);
+    arr.forEach(({mesh,glow,glowMat})=>{
+      mesh.scale.x=mesh.userData.baseScaleX*(pulse);
+      mesh.scale.y=mesh.userData.baseScaleY*(pulse);
+      glow.material.opacity=0.03+0.08*(risk/100);
+    });
+  });
+
+  renderer.render(scene,camera);
+}
+
+function updateOrganColors(){
+  const risks=getRisks();
+  const colorMap={
+    thyroid:risks.thyroid,
+    pancreas:risks.diabetes,
+    liver:risks.metabolic,
+    adrenal:risks.adrenal,
+    adrenal2:risks.adrenal,
+    pituitary:20,
+    gonads:20
+  };
+
+  const conditions_color={thyroid:'#00d4ff',pancreas:'#ff4466',liver:'#ffaa00',adrenal:'#00ff88',adrenal2:'#00ff88',pituitary:'#6c63ff',gonads:'#ff6eb4'};
+
+  Object.entries(organMeshes).forEach(([id,arr])=>{
+    const risk=colorMap[id]||20;
+    const col=riskColor(risk);
+    const hexCol=parseInt(col.bar.replace('#',''),16);
+    arr.forEach(({mesh,glow,glowMat})=>{
+      mesh.material.color.setHex(hexCol);
+      mesh.material.emissive.setHex(hexCol);
+      mesh.material.emissiveIntensity=0.2+0.4*(risk/100);
+      glowMat.color.setHex(hexCol);
+      if(!mesh.userData.baseScaleX){
+        mesh.userData.baseScaleX=mesh.scale.x;
+        mesh.userData.baseScaleY=mesh.scale.y;
+      }
+    });
+  });
+}
+
+// Store base scales after init
+setTimeout(()=>{
+  Object.values(organMeshes).forEach(arr=>arr.forEach(({mesh})=>{
+    mesh.userData.baseScaleX=mesh.scale.x;
+    mesh.userData.baseScaleY=mesh.scale.y;
+  }));
+},100);
+
+// ============================================================
+// GAUGES
+// ============================================================
+function renderGauges(){
+  const risks=getRisks();
+  const data=[
+    {name:'Thyroid',val:risks.thyroid,color:'#00d4ff'},
+    {name:'T2DM',val:risks.diabetes,color:'#ff4466'},
+    {name:'MetSyn',val:risks.metabolic,color:'#ffaa00'},
+    {name:'Adrenal',val:risks.adrenal,color:'#00ff88'}
+  ];
+  document.getElementById('gauge-grid').innerHTML=data.map(d=>{
+    const col=riskColor(d.val);
+    const angle=-Math.PI*0.8+Math.PI*1.6*(d.val/100);
+    const cx=45,cy=45,r=35;
+    const startAngle=-Math.PI*0.8,endAngle=startAngle+Math.PI*1.6*(d.val/100);
+    const x1=cx+r*Math.cos(startAngle),y1=cy+r*Math.sin(startAngle);
+    const x2=cx+r*Math.cos(endAngle),y2=cy+r*Math.sin(endAngle);
+    const large=d.val>50?1:0;
+    const bgX2=cx+r*Math.cos(Math.PI*0.8),bgY2=cy+r*Math.sin(Math.PI*0.8);
+    return`<div class="gauge-wrap">
+      <svg class="gauge-svg" viewBox="0 0 90 55">
+        <path d="M${x1},${y1} A${r},${r} 0 1,1 ${bgX2},${bgY2}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="5" stroke-linecap="round"/>
+        ${d.val>1?`<path d="M${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2}" fill="none" stroke="${d.color}" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 4px ${d.color})"/>`:``}
+        <text x="45" y="38" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="700" fill="${col.text}">${d.val}%</text>
+      </svg>
+      <div class="gauge-label">${d.name}</div>
+      <div class="gauge-status" style="color:${col.text}">${col.label}</div>
     </div>`;
   }).join('');
 }
 
-function renderFlags(){
-  const flags=Object.entries(labs).map(([k,l])=>{
-    const s=labStatus(k);if(s==='normal')return null;
-    return{name:l.name,val:l.val.toFixed(1),unit:l.unit,status:s,refLow:l.refLow,refHigh:l.refHigh};
-  }).filter(Boolean);
-  const el=document.getElementById('flag-list');
-  if(!flags.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:4px 0">All values within reference range</div>';return;}
-  el.innerHTML=flags.map(f=>`<div class="flag-row">
-    <div><div class="flag-name">${f.name}</div><div class="flag-val">${f.val} ${f.unit} · ref ${f.refLow}–${f.refHigh}</div></div>
-    <span class="badge ${f.status==='high'?'badge-high':'badge-low'}">${f.status==='high'?'↑ High':'↓ Low'}</span>
-  </div>`).join('');
+// ============================================================
+// SYMPTOMS
+// ============================================================
+function renderSymptoms(){
+  document.getElementById('symptom-grid').innerHTML=symptoms.map(s=>`
+    <div class="symptom-chip${activeSymptoms.has(s.id)?' active':''}" onclick="toggleSymptom('${s.id}',this)">
+      <div class="symptom-dot"></div>
+      <span>${s.label}</span>
+    </div>`).join('');
 }
 
-function renderSliders(){
+function toggleSymptom(id,el){
+  if(activeSymptoms.has(id)){activeSymptoms.delete(id);el.classList.remove('active')}
+  else{activeSymptoms.add(id);el.classList.add('active')}
+  updateAll();
+}
+
+// ============================================================
+// RADAR CHART
+// ============================================================
+let radarChart=null;
+function renderRadar(){
+  const keys=['tsh','glucose','hba1c','bmi','cortisol','trig','hdl'];
+  const data=keys.map(k=>{
+    const l=labs[k];
+    return Math.min(100,Math.max(0,((l.val-l.refLow)/(l.refHigh-l.refLow))*100));
+  });
+  if(radarChart)radarChart.destroy();
+  radarChart=new Chart(document.getElementById('radar-chart'),{
+    type:'radar',
+    data:{
+      labels:keys.map(k=>labs[k].name.split(' ').slice(-1)[0]),
+      datasets:[{
+        data,
+        backgroundColor:'rgba(108,99,255,0.1)',
+        borderColor:'#6c63ff',
+        borderWidth:1.5,
+        pointBackgroundColor:'#6c63ff',
+        pointRadius:3,
+        pointHoverRadius:5
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{r:{
+        min:0,max:150,
+        grid:{color:'rgba(108,99,255,0.1)'},
+        ticks:{display:false},
+        angleLines:{color:'rgba(108,99,255,0.1)'},
+        pointLabels:{color:'#4a485a',font:{size:9,family:'JetBrains Mono'}}
+      }}
+    }
+  });
+}
+
+// ============================================================
+// LAB SLIDERS
+// ============================================================
+function renderLabSliders(){
   Object.entries(labs).forEach(([k,l])=>{
-    const el=document.getElementById('slider-'+k);if(!el)return;
-    el.innerHTML=`<div class="lab-slider-row">
-      <div class="lsr-header">
-        <span class="lsr-name">${l.name}</span>
-        <span class="lsr-val" id="sv-${k}" style="color:${labStatus(k)==='normal'?'var(--text)':labStatus(k)==='high'?'var(--red)':'var(--amber)'}">${l.val.toFixed(1)} ${l.unit}</span>
+    const el=document.getElementById('lab-'+k);if(!el)return;
+    const s=labStatus(k);
+    const col=s==='normal'?'var(--text)':s==='high'?'var(--red)':'var(--amber)';
+    el.innerHTML=`<div class="lab-row">
+      <div class="lab-header">
+        <span class="lab-name">${l.name}</span>
+        <span class="lab-val-display" id="lv-${k}" style="color:${col}">${l.val.toFixed(1)} ${l.unit}</span>
       </div>
-      <input type="range" min="${l.min}" max="${l.max}" step="${l.step}" value="${l.val}" oninput="updateLab('${k}',this.value)">
-      <div class="lsr-ref">Normal: ${l.refLow}–${l.refHigh} ${l.unit}</div>
+      <div class="lab-slider-wrap">
+        <input type="range" min="${l.min}" max="${l.max}" step="${l.step}" value="${l.val}" oninput="updateLab('${k}',this.value)">
+      </div>
+      <div class="lab-ref">Normal: ${l.refLow}–${l.refHigh} ${l.unit}</div>
     </div>`;
   });
 }
 
+function updateLab(key,v){
+  labs[key].val=parseFloat(parseFloat(v).toFixed(2));
+  const s=labStatus(key);
+  const col=s==='normal'?'var(--text)':s==='high'?'var(--red)':'var(--amber)';
+  const el=document.getElementById('lv-'+key);
+  if(el){el.textContent=labs[key].val.toFixed(1)+' '+labs[key].unit;el.style.color=col;}
+  updateAll();
+}
+
+// ============================================================
+// LIVE RISK BARS
+// ============================================================
 function renderLiveRisk(){
   const r=getRisks();
-  const vals=[r.thyroid,r.diabetes,r.metabolic,r.adrenal];
-  document.getElementById('live-risk').innerHTML=conditions.map((c,i)=>{
-    const p=vals[i],col=riskColor(p);
-    return`<div class="live-row">
-      <div class="live-header"><span class="live-name">${c.name}</span><span class="live-pct" style="color:${col.text}">${p}%</span></div>
-      <div class="live-track"><div class="live-fill" style="width:${p}%;background:${col.bar}"></div></div>
-    </div>`;
-  }).join('');
+  const items=[
+    {name:'Thyroid',val:r.thyroid},{name:'Type 2 DM',val:r.diabetes},
+    {name:'Metabolic',val:r.metabolic},{name:'Adrenal',val:r.adrenal}
+  ];
+  ['live-risk-bars','sidebar-risk-bars'].forEach(elId=>{
+    const el=document.getElementById(elId);if(!el)return;
+    el.innerHTML=items.map(i=>{
+      const col=riskColor(i.val);
+      return`<div class="lrr-row" style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span class="lrr-name" style="font-size:12px;font-weight:700;color:var(--text2)">${i.name}</span>
+          <span style="font-size:12px;font-weight:800;font-family:var(--mono);color:${col.text}">${i.val}%</span>
+        </div>
+        <div class="lrr-bar"><div class="lrr-fill" style="width:${i.val}%;background:${col.bar};box-shadow:0 0 8px ${col.bar}44"></div></div>
+      </div>`;
+    }).join('');
+  });
 
-  const flags=Object.entries(labs).map(([k,l])=>{
-    const s=labStatus(k);if(s==='normal')return null;
-    return`<div class="flag-row"><div class="flag-name">${l.name}</div><span class="badge ${s==='high'?'badge-high':'badge-low'}">${s==='high'?'↑':'↓'}</span></div>`;
-  }).filter(Boolean);
+  // Flags
+  const flags=Object.entries(labs).filter(([k])=>labStatus(k)!=='normal').map(([k,l])=>{
+    const s=labStatus(k);
+    return`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(--border);font-size:11px">
+      <span style="color:var(--text2)">${l.name}</span>
+      <span style="font-family:var(--mono);color:${s==='high'?'var(--red)':'var(--amber)'};font-weight:700">${s==='high'?'↑ HIGH':'↓ LOW'}</span>
+    </div>`;
+  });
   const lf=document.getElementById('live-flags');
-  if(lf)lf.innerHTML=flags.length?flags.join(''):'<div style="font-size:12px;color:var(--text3)">All values normal</div>';
+  if(lf)lf.innerHTML=flags.length?flags.join(''):'<div style="font-size:11px;color:var(--text4);font-family:var(--mono)">All values normal</div>';
+}
+
+// ============================================================
+// SIDEBAR BADGES
+// ============================================================
+function renderSidebarBadges(){
+  const r=getRisks();
+  const items=[
+    {id:'thyroid',name:'Thyroid',val:r.thyroid},
+    {id:'diabetes',name:'T2DM',val:r.diabetes},
+    {id:'metabolic',name:'MetS',val:r.metabolic},
+    {id:'adrenal',name:'Adrenal',val:r.adrenal}
+  ];
+  const el=document.getElementById('sidebar-risks');
+  if(el)el.innerHTML=items.map(i=>{const col=riskColor(i.val);return`<span class="prisk ${col.cls}">${i.name} ${i.val}%</span>`}).join('');
+}
+
+// ============================================================
+// HISTORY CHARTS
+// ============================================================
+let histDone=false,histCharts=[];
+function renderHistory(){
+  if(histDone)return;histDone=true;
+  const visits=['V1','V2','V3','V4','V5','V6'];
+  [
+    {id:'hc-d',data:[22,28,31,35,38,42],color:'#ff4466'},
+    {id:'hc-t',data:[18,24,29,32,30,34],color:'#00d4ff'},
+    {id:'hc-m',data:[30,33,36,40,44,48],color:'#ffaa00'},
+    {id:'hc-a',data:[12,14,11,16,13,15],color:'#00ff88'}
+  ].forEach(cfg=>{
+    const c=new Chart(document.getElementById(cfg.id),{
+      type:'line',
+      data:{labels:visits,datasets:[{
+        data:cfg.data,
+        borderColor:cfg.color,
+        backgroundColor:cfg.color+'15',
+        fill:true,tension:0.4,
+        pointRadius:5,
+        pointBackgroundColor:cfg.color,
+        pointBorderColor:cfg.color+'44',
+        pointBorderWidth:4,
+        pointHoverRadius:7
+      }]},
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          y:{min:0,max:100,grid:{color:'rgba(108,99,255,0.06)'},ticks:{color:'#4a485a',font:{family:'JetBrains Mono',size:10},callback:v=>v+'%'}},
+          x:{grid:{display:false},ticks:{color:'#4a485a',font:{family:'JetBrains Mono',size:10}}}
+        }
+      }
+    });
+    histCharts.push(c);
+  });
+}
+
+// ============================================================
+// COMPARE VIEW
+// ============================================================
+const comparePatients=[
+  {name:'Patient A',avatar:'PA',color:'#6c63ff',age:34,sex:'F',
+   glucose:95,hba1c:5.4,bmi:26,tsh:2.1,cortisol:14,trig:130,hdl:52},
+  {name:'Patient B',avatar:'PB',color:'#00d4ff',age:58,sex:'M',
+   glucose:148,hba1c:7.2,bmi:33,tsh:5.8,cortisol:8,trig:210,hdl:35}
+];
+
+function computePatientRisk(p){
+  const glucose=p.glucose,hba1c=p.hba1c,bmi=p.bmi,tsh=p.tsh,cortisol=p.cortisol,trig=p.trig,hdl=p.hdl;
+  const gZ=(glucose-90)/20,hZ=(hba1c-5.4)/0.6,bZ=(bmi-25)/5;
+  const diabetes=Math.min(99,Math.round(sig(gZ*1.4+hZ*1.1+bZ*0.7-0.8)*100));
+  const tshZ=(tsh-2.2)/1.2;
+  const thyroid=Math.min(99,Math.round(sig(tshZ*1.2-0.5)*100));
+  const trZ=(trig-130)/50,hdlZ=(50-hdl)/15,bZ2=(bmi-27)/5;
+  const metabolic=Math.min(99,Math.round(sig(trZ*1.0+hdlZ*0.9+bZ2*0.8-0.6)*100));
+  const cZ=(12-cortisol)/5;
+  const adrenal=Math.min(99,Math.round(sig(cZ*1.3-0.4)*100));
+  return{thyroid,diabetes,metabolic,adrenal};
+}
+
+let compareChart=null;
+function renderCompare(){
+  comparePatients.forEach((p,i)=>{
+    const r=computePatientRisk(p);
+    const el=document.getElementById(`compare-p${i+1}`);
+    if(!el)return;
+    const items=[{n:'Thyroid',v:r.thyroid},{n:'T2DM',v:r.diabetes},{n:'Metabolic',v:r.metabolic},{n:'Adrenal',v:r.adrenal}];
+    el.innerHTML=`
+      <div class="cp-header">
+        <div class="cp-avatar" style="background:linear-gradient(135deg,${p.color},${p.color}88)">${p.avatar}</div>
+        <div><div class="cp-name">${p.name}</div><div class="cp-meta">${p.sex} · Age ${p.age}</div></div>
+      </div>
+      <div style="margin-bottom:1rem">
+        ${items.map(it=>{const col=riskColor(it.v);return`
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+              <span style="font-size:12px;font-weight:700;color:var(--text2)">${it.n}</span>
+              <span style="font-size:12px;font-weight:800;font-family:var(--mono);color:${col.text}">${it.v}%</span>
+            </div>
+            <div style="height:4px;background:var(--bg4);border-radius:2px">
+              <div style="height:100%;width:${it.v}%;background:${col.bar};border-radius:2px;box-shadow:0 0 6px ${col.bar}44"></div>
+            </div>
+          </div>`}).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+        ${[['Glucose',p.glucose,'mg/dL'],['HbA1c',p.hba1c,'%'],['BMI',p.bmi,'kg/m²']].map(([n,v,u])=>`
+          <div style="background:var(--bg3);border-radius:8px;padding:8px;text-align:center;border:0.5px solid var(--border)">
+            <div style="font-size:9px;color:var(--text4);font-family:var(--mono);margin-bottom:2px">${n}</div>
+            <div style="font-size:14px;font-weight:800;font-family:var(--mono);color:${p.color}">${v}</div>
+            <div style="font-size:9px;color:var(--text4);font-family:var(--mono)">${u}</div>
+          </div>`).join('')}
+      </div>`;
+  });
+
+  // Comparison chart
+  const r1=computePatientRisk(comparePatients[0]);
+  const r2=computePatientRisk(comparePatients[1]);
+  const labels=['Thyroid','T2DM','Metabolic','Adrenal'];
+  const d1=[r1.thyroid,r1.diabetes,r1.metabolic,r1.adrenal];
+  const d2=[r2.thyroid,r2.diabetes,r2.metabolic,r2.adrenal];
+
+  if(compareChart)compareChart.destroy();
+  compareChart=new Chart(document.getElementById('compare-chart'),{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {label:'Patient A',data:d1,backgroundColor:'rgba(108,99,255,0.7)',borderColor:'#6c63ff',borderWidth:1.5,borderRadius:6},
+        {label:'Patient B',data:d2,backgroundColor:'rgba(0,212,255,0.7)',borderColor:'#00d4ff',borderWidth:1.5,borderRadius:6}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#9896b0',font:{family:'JetBrains Mono',size:11}}}},
+      scales:{
+        y:{min:0,max:100,grid:{color:'rgba(108,99,255,0.06)'},ticks:{color:'#4a485a',font:{family:'JetBrains Mono',size:10},callback:v=>v+'%'}},
+        x:{grid:{display:false},ticks:{color:'#4a485a',font:{family:'JetBrains Mono',size:10}}}
+      }
+    }
+  });
+}
+
+// ============================================================
+// INSIGHTS & NARRATIVE
+// ============================================================
+function renderNarrative(){
+  const r=getRisks();
+  const highest=Object.entries(r).sort((a,b)=>b[1]-a[1])[0];
+  const flags=Object.keys(labs).filter(k=>labStatus(k)!=='normal').map(k=>labs[k].name);
+  const sympList=[...activeSymptoms].map(s=>symptoms.find(x=>x.id===s)?.label).filter(Boolean);
+
+  const narratives={
+    thyroid:`Clinical assessment indicates <strong>thyroid dysfunction risk at ${r.thyroid}%</strong>. TSH of <strong>${labs.tsh.val} mIU/L</strong> ${labs.tsh.val>4?'exceeds':'is within'} the ATA upper reference limit of 4.0 mIU/L. Free T4 at <strong>${labs.t4.val} ng/dL</strong> suggests ${labs.t4.val<0.8?'hypothyroid':'euthyroid'} trajectory. ${sympList.length?`Reported symptoms (${sympList.join(', ')}) are consistent with thyroid axis dysfunction.`:'No corroborating symptoms reported.'} Recommend thyroid antibody panel (TPO, anti-Tg) and repeat TSH in 6 weeks per ATA guidelines.`,
+    diabetes:`Metabolic risk assessment reveals <strong>Type 2 diabetes probability at ${r.diabetes}%</strong>. Fasting glucose of <strong>${labs.glucose.val} mg/dL</strong> ${labs.glucose.val>=126?'meets ADA diagnostic threshold':labs.glucose.val>=100?'falls within prediabetic range (100–125 mg/dL)':'is within normal limits'}. HbA1c of <strong>${labs.hba1c.val}%</strong> ${labs.hba1c.val>=6.5?'meets ADA diagnostic criteria for diabetes':labs.hba1c.val>=5.7?'indicates prediabetes (5.7–6.4%)':'is within normal range'}. BMI of ${labs.bmi.val} kg/m² ${labs.bmi.val>30?'indicates obesity, a major T2DM risk factor':'contributes modestly to metabolic risk'}. ${sympList.length?`Symptoms including ${sympList.filter(s=>['Frequent urination','Excessive thirst','Blurred vision'].includes(s)).join(', ')||'reported'} are hallmark presentations of hyperglycemia.`:''}`,
+    metabolic:`<strong>Metabolic syndrome risk at ${r.metabolic}%</strong> based on NCEP ATP III criteria. Triglycerides at <strong>${labs.trig.val} mg/dL</strong> ${labs.trig.val>149?'exceed the 149 mg/dL threshold':'are within range'}. HDL at <strong>${labs.hdl.val} mg/dL</strong> ${labs.hdl.val<40?'falls below the protective minimum of 40 mg/dL':'provides adequate cardiovascular protection'}. Combined with BMI ${labs.bmi.val} kg/m², the lipid profile suggests ${r.metabolic>50?'significant':'moderate'} atherogenic risk. Recommend lifestyle modification counseling and fasting lipid panel reassessment in 3 months.`,
+    adrenal:`<strong>Adrenal insufficiency risk at ${r.adrenal}%</strong>. AM cortisol of <strong>${labs.cortisol.val} μg/dL</strong> ${labs.cortisol.val<6?'is below the diagnostic threshold of 6 μg/dL, suggesting adrenal insufficiency':'is within the normal morning range (6–23 μg/dL)'}. ACTH at ${labs.acth.val} pg/mL — ${labs.acth.val<10?'low ACTH with low cortisol suggests secondary/tertiary etiology':labs.acth.val>60?'elevated ACTH with low cortisol points to primary adrenal insufficiency (Addison\'s disease)':'within reference range'}. ${r.adrenal>35?'Cosyntropin stimulation test is recommended per Endocrine Society guidelines.':'Continued routine monitoring is appropriate.'}`
+  };
+
+  const box=document.getElementById('narrative-box');
+  if(!box)return;
+  box.innerHTML=`
+    <div class="narrative-header">
+      <div class="narrative-title">AI Clinical Narrative</div>
+      <span class="narrative-badge">AUTO-GENERATED · ${new Date().toLocaleDateString()}</span>
+    </div>
+    <div class="narrative-text">${narratives[highest[0]]}</div>
+    ${flags.length?`<div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border);font-size:11px;color:var(--text3);font-family:var(--mono)">⚠ FLAGGED VALUES: ${flags.join(' · ')}</div>`:''}`;
 }
 
 function renderInsights(){
   const r=getRisks();
   const items=[];
-  if(r.diabetes>50)items.push({col:'#e05a5a',title:'Elevated diabetes risk detected',body:`Predicted risk ${r.diabetes}%. Glucose and HbA1c are primary drivers. ADA criteria: HbA1c ≥6.5% for diagnosis. Current values may indicate a prediabetic trajectory warranting further evaluation.`});
-  if(r.thyroid>40)items.push({col:'#EF9F27',title:'Thyroid panel warrants review',body:`TSH deviation from optimal range may signal subclinical hypo- or hyperthyroidism. Free T4/T3 pattern suggests consideration of TPO antibody testing per ATA guidelines.`});
-  if(r.metabolic>45)items.push({col:'#EF9F27',title:'Metabolic syndrome risk elevated',body:`Triglyceride/HDL ratio and BMI combination meets ≥2 of 5 NCEP ATP III criteria. Waist circumference and blood pressure measurement recommended to complete screening.`});
-  if(r.adrenal>35)items.push({col:'#a8a69e',title:'Adrenal axis — continued monitoring',body:`AM cortisol approaching lower reference limit. If symptomatic (fatigue, orthostatic hypotension, hyponatremia), cosyntropin stimulation test indicated per Endocrine Society guidelines.`});
-  if(!items.length)items.push({col:'#2db87a',title:'All risk models within low range',body:'Current biomarker profile does not indicate elevated risk for any modeled endocrine condition. Recommend routine monitoring per age-appropriate screening guidelines.'});
+  if(r.diabetes>40)items.push({color:'#ff4466',icon:'🩸',title:'Elevated T2DM Risk',body:`Predicted risk ${r.diabetes}%. Glucose (${labs.glucose.val} mg/dL) and HbA1c (${labs.hba1c.val}%) are primary drivers. ADA 2024 criteria: HbA1c ≥6.5% or fasting glucose ≥126 mg/dL for diagnosis.`,tags:['ADA 2024','Glucose','HbA1c']});
+  if(r.thyroid>35)items.push({color:'#00d4ff',icon:'🫀',title:'Thyroid Dysfunction Pattern',body:`Risk ${r.thyroid}%. TSH deviation from optimal range (0.4–4.0 mIU/L) suggests subclinical thyroid disease. TPO antibody testing and repeat TSH in 6 weeks recommended.`,tags:['ATA Guidelines','TSH','T4/T3']});
+  if(r.metabolic>40)items.push({color:'#ffaa00',icon:'⚡',title:'Metabolic Syndrome Criteria',body:`Risk ${r.metabolic}%. Triglyceride/HDL ratio and BMI combination meets ≥2 NCEP ATP III criteria. Waist circumference measurement needed to complete assessment.`,tags:['NCEP ATP III','Lipids','BMI']});
+  if(r.adrenal>30)items.push({color:'#00ff88',icon:'🧪',title:'Adrenal Axis Monitoring',body:`Risk ${r.adrenal}%. AM cortisol (${labs.cortisol.val} μg/dL) approaching lower reference bound. Cosyntropin stimulation test indicated if symptomatic.`,tags:['Endocrine Society','Cortisol','ACTH']});
+  if(!items.length)items.push({color:'#6c63ff',icon:'✓',title:'All Models Within Low-Risk Range',body:'Current biomarker profile does not indicate elevated risk for any modeled endocrine condition. Routine monitoring per age-appropriate screening guidelines is recommended.',tags:['Low Risk']});
 
-  document.getElementById('insights-list').innerHTML=items.map(i=>`<div class="insight-card">
-    <div class="insight-dot" style="background:${i.col}"></div>
-    <div><div class="insight-title">${i.title}</div><div class="insight-body">${i.body}</div></div>
-  </div>`).join('');
+  const el=document.getElementById('insights-list');
+  if(el)el.innerHTML=items.map(i=>`
+    <div class="insight-card">
+      <div class="insight-accent" style="background:${i.color}"></div>
+      <div class="insight-icon">${i.icon}</div>
+      <div>
+        <div class="insight-title">${i.title}</div>
+        <div class="insight-body">${i.body}</div>
+        <div class="insight-tags">${i.tags.map(t=>`<span class="itag" style="background:rgba(108,99,255,0.1);color:var(--accent);border:0.5px solid var(--border2)">${t}</span>`).join('')}</div>
+      </div>
+    </div>`).join('');
 }
 
-function updateLab(key,rawVal){
-  labs[key].val=parseFloat(parseFloat(rawVal).toFixed(2));
-  const sv=document.getElementById('sv-'+key);
-  if(sv){
-    sv.textContent=labs[key].val.toFixed(1)+' '+labs[key].unit;
-    const s=labStatus(key);
-    sv.style.color=s==='normal'?'var(--text)':s==='high'?'var(--red)':'var(--amber)';
-  }
-  renderRiskCards();
-  renderDetail();
-  renderFlags();
+// ============================================================
+// INTERVENTION SIMULATOR
+// ============================================================
+const simParams=[
+  {key:'glucose',name:'Reduce Glucose',min:-80,max:0,val:0,unit:'mg/dL'},
+  {key:'bmi',name:'Reduce BMI',min:-10,max:0,val:0,unit:'kg/m²'},
+  {key:'hba1c',name:'Reduce HbA1c',min:-3,max:0,val:0,unit:'%'},
+  {key:'trig',name:'Reduce Triglycerides',min:-100,max:0,val:0,unit:'mg/dL'},
+];
+
+function renderSimulator(){
+  const el=document.getElementById('sim-sliders');
+  if(!el)return;
+  el.innerHTML=simParams.map((p,i)=>`
+    <div class="sim-row">
+      <span class="sim-label">${p.name}</span>
+      <input type="range" class="sim-slider" min="${p.min}" max="${p.max}" step="1" value="${p.val}" oninput="updateSim(${i},this.value)">
+      <span class="sim-delta" id="sd-${i}" style="color:${p.val<0?'var(--green)':'var(--text3)'}">${p.val>0?'+':''}${p.val} ${p.unit}</span>
+    </div>`).join('');
+  updateSimResults();
+}
+
+function updateSim(i,v){
+  simParams[i].val=parseFloat(v);
+  const el=document.getElementById(`sd-${i}`);
+  if(el){el.textContent=(simParams[i].val>0?'+':'')+simParams[i].val+' '+simParams[i].unit;el.style.color=simParams[i].val<0?'var(--green)':'var(--text3)'}
+  updateSimResults();
+}
+
+function updateSimResults(){
+  const orig=getRisks();
+  const modified={...labs};
+  simParams.forEach(p=>{if(p.val!==0)modified[p.key]={...labs[p.key],val:Math.max(labs[p.key].min,labs[p.key].val+p.val)}});
+  const tempLabs={...labs};
+  simParams.forEach(p=>{if(p.val!==0)labs[p.key]={...labs[p.key],val:Math.max(labs[p.key].min,labs[p.key].val+p.val)}});
+  const simR=getRisks();
+  simParams.forEach(p=>{labs[p.key]=tempLabs[p.key]});
+
+  const items=[
+    {name:'Thyroid',orig:orig.thyroid,sim:simR.thyroid},
+    {name:'T2DM',orig:orig.diabetes,sim:simR.diabetes},
+    {name:'MetSyn',orig:orig.metabolic,sim:simR.metabolic},
+    {name:'Adrenal',orig:orig.adrenal,sim:simR.adrenal}
+  ];
+  const el=document.getElementById('sim-results');
+  if(el)el.innerHTML=items.map(it=>{
+    const delta=it.sim-it.orig;
+    const col=riskColor(it.sim);
+    return`<div class="sim-result">
+      <div class="sim-result-name">${it.name}</div>
+      <div class="sim-result-val" style="color:${col.text}">${it.sim}%</div>
+      <div class="sim-result-delta" style="color:${delta<0?'var(--green)':delta>0?'var(--red)':'var(--text3)'}">${delta<0?'↓':'↑'}${Math.abs(delta)}%</div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// ORGAN LABELS
+// ============================================================
+function renderOrganLabels(){
+  const labels=[
+    {id:'thyroid',name:'Thyroid',top:'14%',left:'48%',color:'#00d4ff'},
+    {id:'pancreas',name:'Pancreas',top:'48%',left:'30%',color:'#ff4466'},
+    {id:'adrenal',name:'Adrenals',top:'32%',left:'18%',color:'#00ff88'},
+    {id:'liver',name:'Liver',top:'40%',left:'62%',color:'#ffaa00'},
+    {id:'pituitary',name:'Pituitary',top:'5%',left:'52%',color:'#6c63ff'},
+  ];
+  const el=document.getElementById('organ-labels');
+  if(!el)return;
+  const r=getRisks();
+  const riskMap={thyroid:r.thyroid,pancreas:r.diabetes,adrenal:r.adrenal,liver:r.metabolic,pituitary:20};
+  el.innerHTML=labels.map(l=>{
+    const risk=riskMap[l.id]||20;
+    const col=riskColor(risk);
+    return`<div class="organ-label" style="top:${l.top};left:${l.left}">
+      <div class="organ-dot" style="background:${col.text};box-shadow:0 0 0 0 ${col.text}44"></div>
+      <div class="organ-label-text" style="color:${col.text};border-color:${col.text}33">${l.name} · ${risk}%</div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// MASTER UPDATE
+// ============================================================
+function updateAll(){
+  renderGauges();
   renderLiveRisk();
+  renderSidebarBadges();
+  renderOrganLabels();
+  updateOrganColors();
+  renderNarrative();
   renderInsights();
+  updateSimResults();
+  if(radarChart)renderRadar();
 }
 
-function selectCondition(i){
-  selectedCondition=i;
-  renderRiskCards();
-  renderDetail();
-}
-
-function switchView(v,btn){
+// ============================================================
+// VIEW SWITCHING
+// ============================================================
+function switchView(v,tabBtn,navItem){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.sidebar-item').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+
   document.getElementById('view-'+v).classList.add('active');
-  btn.classList.add('active');
-  if(v==='history')renderHistoryCharts();
-  if(v==='insights')renderInsights();
+  if(tabBtn)tabBtn.classList.add('active');
+  if(navItem)navItem.classList.add('active');
+
+  if(v==='history')renderHistory();
+  if(v==='compare')renderCompare();
+  if(v==='insights'){renderNarrative();renderInsights();renderSimulator();}
 }
 
-let histDone=false;
-function renderHistoryCharts(){
-  if(histDone)return;histDone=true;
-  [{id:'hc-diabetes',data:[22,28,31,35,38,42],color:'#4a9eff'},
-   {id:'hc-thyroid',data:[18,24,29,32,30,34],color:'#EF9F27'},
-   {id:'hc-metabolic',data:[30,33,36,40,44,48],color:'#D85A30'},
-   {id:'hc-adrenal',data:[12,14,11,16,13,15],color:'#2db87a'}].forEach(cfg=>{
-    new Chart(document.getElementById(cfg.id),{
-      type:'line',
-      data:{labels:['V1','V2','V3','V4','V5','V6'],datasets:[{data:cfg.data,borderColor:cfg.color,backgroundColor:cfg.color+'18',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:cfg.color,pointBorderColor:cfg.color+'44',pointBorderWidth:3}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#5a5955',callback:v=>v+'%'}},x:{grid:{display:false},ticks:{color:'#5a5955'}}}}
-    });
-  });
-}
-
-// Init
-renderRiskCards();
-selectCondition(0);
-renderFlags();
-renderSliders();
-renderLiveRisk();
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load',()=>{
+  initThree();
+  renderGauges();
+  renderSymptoms();
+  renderRadar();
+  renderLabSliders();
+  renderLiveRisk();
+  renderSidebarBadges();
+  renderOrganLabels();
+  renderNarrative();
+  renderInsights();
+  renderSimulator();
+});
 </script>
+<script src="loader.js"></script>
 </body>
 </html>
