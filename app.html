@@ -1345,6 +1345,7 @@ function switchView(v,tabBtn,navItem){
   if(tabBtn)tabBtn.classList.add('active');
   if(navItem)navItem.classList.add('active');
 
+  if(v==='labs'){renderLabSliders();renderLiveRisk();}
   if(v==='history')renderHistory();
   if(v==='compare')renderCompare();
   if(v==='insights'){renderNarrative();renderInsights();renderSimulator();}
@@ -1358,13 +1359,14 @@ window.addEventListener('load',()=>{
   renderGauges();
   renderSymptoms();
   renderRadar();
-  renderLabSliders();
   renderLiveRisk();
   renderSidebarBadges();
   renderOrganLabels();
   renderNarrative();
   renderInsights();
   renderSimulator();
+  // Render sliders after short delay to ensure DOM is painted
+  setTimeout(()=>renderLabSliders(), 100);
 });
 </script>
 <script src="loader.js"></script>
