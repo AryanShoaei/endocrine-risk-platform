@@ -2,703 +2,315 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="shared.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EndoRisk — Clinical Intelligence Platform</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<title>EndoRisk — Endocrine Risk Visualization</title>
+<meta name="description" content="An interactive, transparent educational tool that visualizes endocrine risk factors across four conditions from clinical biomarkers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#04040a;--bg1:#080812;--bg2:#0c0c1a;--bg3:#10101f;
-  --text:#e8e6f0;--text2:#9896b0;--text3:#4a485a;--text4:#2a2838;
-  --accent:#6c63ff;--accent2:#4a43cc;--cyan:#00d4ff;--green:#00ff88;
-  --amber:#ffaa00;--red:#ff4466;--pink:#ff6eb4;
-  --border:rgba(108,99,255,0.12);--border2:rgba(108,99,255,0.25);
-  --font:'Syne',sans-serif;--mono:'JetBrains Mono',monospace;
+  --bg:#05070b;--bg1:#080b12;--panel:#0a0e16;--panel2:#0d121c;
+  --line:rgba(120,200,210,0.10);--line2:rgba(120,200,210,0.22);
+  --text:#e7eef1;--text2:#8ea0a8;--text3:#566570;--text4:#33414b;
+  --teal:#19e3d2;--teal2:#0fb9ab;--violet:#7c74ff;
+  --mint:#34e6a8;--amber:#ffba4a;--coral:#ff5d73;
+  --disp:'Syne',sans-serif;--mono:'JetBrains Mono',monospace;
+  --ease:cubic-bezier(.22,.61,.36,1);
 }
+*{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:hidden}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.5}
+::selection{background:rgba(25,227,210,.25);color:#fff}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:4px}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;color:inherit}
+#bg{position:fixed;inset:0;z-index:0;opacity:.85}
+.wrap{position:relative;z-index:1}
 
 /* NAV */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:1000;
-  height:64px;display:flex;align-items:center;justify-content:space-between;
-  padding:0 2.5rem;
-  background:rgba(4,4,10,0.7);
-  border-bottom:0.5px solid var(--border);
-  backdrop-filter:blur(20px);
-  transition:all 0.3s;
-}
-.nav-logo{
-  font-size:22px;font-weight:800;letter-spacing:-0.03em;
-  background:linear-gradient(135deg,var(--accent),var(--cyan));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  text-decoration:none;
-}
-.nav-links{display:flex;gap:2rem;align-items:center}
-.nav-links a{font-size:13px;font-weight:600;color:var(--text3);text-decoration:none;letter-spacing:0.02em;transition:color 0.2s}
-.nav-links a:hover{color:var(--text)}
-.nav-right{display:flex;gap:10px;align-items:center}
-.nav-chip{font-size:10px;font-family:var(--mono);padding:3px 10px;border-radius:6px;border:0.5px solid var(--border2);color:var(--accent);background:rgba(108,99,255,0.06)}
-.nav-btn{font-size:13px;font-weight:700;padding:8px 20px;border-radius:9px;border:none;cursor:pointer;font-family:var(--font);text-decoration:none;transition:all 0.2s;letter-spacing:0.01em}
-.nav-btn.ghost{background:transparent;color:var(--text2);border:0.5px solid var(--border2)}
-.nav-btn.ghost:hover{background:var(--bg2);color:var(--text);border-color:var(--accent)}
-.nav-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 0 20px rgba(108,99,255,0.3)}
-.nav-btn.primary:hover{box-shadow:0 0 30px rgba(108,99,255,0.5);transform:translateY(-1px)}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;
+  padding:16px 32px;transition:all .3s var(--ease)}
+nav.scrolled{background:rgba(8,11,18,.78);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);padding:11px 32px}
+.brand{font-family:var(--disp);font-weight:800;font-size:21px;letter-spacing:-.04em;display:flex;align-items:center;gap:9px}
+.brand .d{width:9px;height:9px;border-radius:2px;background:linear-gradient(135deg,var(--teal),var(--violet));box-shadow:0 0 12px rgba(25,227,210,.5)}
+.brand b{background:linear-gradient(110deg,var(--teal),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nlinks{margin-left:auto;display:flex;align-items:center;gap:28px}
+.nlinks a{font-size:13px;color:var(--text2);transition:color .2s}
+.nlinks a:hover{color:var(--text)}
+.cta{font-size:13px;font-weight:600;padding:10px 18px;border-radius:9px;background:linear-gradient(135deg,var(--teal2),var(--violet));color:#fff;transition:all .2s var(--ease)}
+.cta:hover{box-shadow:0 0 28px rgba(25,227,210,.4);transform:translateY(-1px)}
+@media(max-width:760px){.nlinks a:not(.cta){display:none}}
 
 /* HERO */
-.hero{
-  min-height:100vh;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:8rem 2rem 4rem;
-  position:relative;overflow:hidden;
-}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 32px 60px;max-width:1180px;margin:0 auto}
+.badge{display:inline-flex;align-items:center;gap:9px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--teal);border:1px solid var(--line2);border-radius:30px;padding:7px 15px;width:fit-content;margin-bottom:30px;background:rgba(25,227,210,.05)}
+.badge .pd{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal);animation:bp 1.6s infinite}
+@keyframes bp{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-family:var(--disp);font-weight:800;font-size:clamp(40px,7.5vw,86px);line-height:.98;letter-spacing:-.04em;max-width:14ch}
+.hero h1 .g{background:linear-gradient(110deg,var(--teal),var(--violet) 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p.sub{font-size:clamp(14px,1.6vw,17px);color:var(--text2);max-width:60ch;margin-top:26px;line-height:1.7}
+.herobtns{display:flex;gap:14px;margin-top:38px;flex-wrap:wrap}
+.btn{font-size:14px;font-weight:600;padding:14px 26px;border-radius:11px;transition:all .22s var(--ease);display:inline-flex;align-items:center;gap:9px;letter-spacing:.01em}
+.btn.p{background:linear-gradient(135deg,var(--teal2),var(--violet));color:#fff}
+.btn.p:hover{box-shadow:0 0 34px rgba(25,227,210,.45);transform:translateY(-2px)}
+.btn.s{border:1px solid var(--line2);color:var(--text);background:rgba(13,18,28,.5)}
+.btn.s:hover{border-color:var(--teal2)}
+.disc-line{margin-top:34px;font-size:11px;color:var(--text4);max-width:62ch;line-height:1.7;border-left:2px solid var(--line2);padding-left:14px}
 
-#hero-canvas{
-  position:absolute;top:0;left:0;width:100%;height:100%;
-  pointer-events:none;z-index:0;
-}
+/* reveal */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.rv.in{opacity:1;transform:none}
 
-.hero-content{position:relative;z-index:1}
+/* STATS */
+.stats{max-width:1180px;margin:0 auto;padding:30px 32px 80px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.stat{border:1px solid var(--line);border-radius:16px;background:rgba(10,14,22,.5);padding:26px 22px;backdrop-filter:blur(6px)}
+.stat .n{font-family:var(--disp);font-weight:800;font-size:42px;letter-spacing:-.03em;line-height:1;
+  background:linear-gradient(135deg,var(--teal),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat .l{font-size:11px;color:var(--text2);margin-top:11px;letter-spacing:.03em;line-height:1.4}
+@media(max-width:820px){.stats{grid-template-columns:1fr 1fr}}
 
-.hero-badge{
-  display:inline-flex;align-items:center;gap:8px;
-  font-size:11px;font-weight:700;font-family:var(--mono);
-  padding:6px 16px;border-radius:20px;
-  border:0.5px solid rgba(108,99,255,0.3);
-  background:rgba(108,99,255,0.06);
-  color:var(--accent);
-  margin-bottom:2.5rem;
-  letter-spacing:0.06em;text-transform:uppercase;
-}
-.badge-pulse{
-  width:6px;height:6px;border-radius:50%;background:var(--accent);
-  animation:badgePulse 2s infinite;
-}
-@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(108,99,255,0.5)}50%{box-shadow:0 0 0 6px rgba(108,99,255,0)}}
+/* SECTION */
+section.blk{max-width:1180px;margin:0 auto;padding:80px 32px;position:relative}
+.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:16px}
+.h2{font-family:var(--disp);font-weight:700;font-size:clamp(28px,4vw,46px);letter-spacing:-.03em;line-height:1.05;max-width:18ch}
+.lead{font-size:15px;color:var(--text2);max-width:62ch;margin-top:18px;line-height:1.75}
 
-.hero h1{
-  font-size:clamp(48px,8vw,96px);
-  font-weight:800;
-  line-height:0.95;
-  letter-spacing:-0.04em;
-  margin-bottom:2rem;
-  max-width:900px;
-}
-.hero h1 .line1{display:block;color:var(--text)}
-.hero h1 .line2{
-  display:block;
-  background:linear-gradient(135deg,var(--accent),var(--cyan),var(--pink));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-size:200% 200%;
-  animation:gradShift 4s ease infinite;
-}
-@keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-
-.hero-sub{
-  font-size:clamp(15px,2vw,19px);
-  color:var(--text2);
-  max-width:580px;
-  line-height:1.75;
-  margin:0 auto 3rem;
-  font-weight:400;
-}
-
-.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:5rem}
-.btn-hero{
-  font-size:15px;font-weight:700;padding:15px 36px;
-  border-radius:12px;border:none;cursor:pointer;
-  font-family:var(--font);text-decoration:none;
-  display:inline-flex;align-items:center;gap:8px;
-  transition:all 0.2s;letter-spacing:0.01em;
-}
-.btn-hero.primary{
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#fff;
-  box-shadow:0 0 30px rgba(108,99,255,0.4);
-}
-.btn-hero.primary:hover{box-shadow:0 0 50px rgba(108,99,255,0.6);transform:translateY(-2px)}
-.btn-hero.ghost{
-  background:rgba(255,255,255,0.04);
-  color:var(--text);
-  border:0.5px solid var(--border2);
-  backdrop-filter:blur(10px);
-}
-.btn-hero.ghost:hover{background:rgba(255,255,255,0.07);border-color:var(--accent)}
-
-/* STAT STRIP */
-.stat-strip{
-  display:flex;border:0.5px solid var(--border);border-radius:16px;
-  background:rgba(12,12,26,0.8);backdrop-filter:blur(20px);
-  overflow:hidden;max-width:780px;margin:0 auto;
-  position:relative;z-index:1;
-}
-.stat-strip::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--accent),var(--cyan),transparent);
-}
-.stat-item{
-  flex:1;padding:22px 24px;border-right:0.5px solid var(--border);
-  text-align:left;
-}
-.stat-item:last-child{border-right:none}
-.stat-num{
-  font-size:30px;font-weight:800;font-family:var(--mono);
-  background:linear-gradient(135deg,var(--text),var(--accent));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  margin-bottom:3px;
-}
-.stat-label{font-size:11px;color:var(--text3);font-weight:600;font-family:var(--mono)}
-
-/* MARQUEE */
-.marquee-wrap{
-  padding:2rem 0;overflow:hidden;
-  border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);
-  background:rgba(8,8,18,0.6);margin:5rem 0;
-}
-.marquee-inner{
-  display:flex;gap:3rem;
-  animation:marquee 25s linear infinite;
-  white-space:nowrap;
-}
-@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.marquee-item{
-  font-size:12px;font-weight:700;font-family:var(--mono);
-  color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;
-  display:flex;align-items:center;gap:10px;flex-shrink:0;
-}
-.marquee-dot{width:4px;height:4px;border-radius:50%;background:var(--accent)}
-
-/* FEATURES */
-.features{padding:6rem 2rem;max-width:1200px;margin:0 auto}
-.section-eyebrow{font-size:11px;font-weight:700;font-family:var(--mono);color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem}
-.section-title{font-size:clamp(32px,4vw,52px);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:1rem}
-.section-sub{font-size:16px;color:var(--text2);max-width:500px;line-height:1.7;margin-bottom:4rem;font-weight:400}
-
-.features-bento{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  grid-template-rows:auto auto;
-  gap:12px;
-}
-.bento-card{
-  border:0.5px solid var(--border);border-radius:16px;
-  background:var(--bg1);padding:2rem;
-  position:relative;overflow:hidden;
-  transition:all 0.3s;
-}
-.bento-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 20px 40px rgba(0,0,0,0.4)}
-.bento-card.wide{grid-column:span 2}
-.bento-card.tall{grid-row:span 2}
-.bento-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--accent),transparent);
-  opacity:0;transition:opacity 0.3s;
-}
-.bento-card:hover::before{opacity:1}
-
-.bento-glow{
-  position:absolute;top:-50px;right:-50px;width:200px;height:200px;
-  border-radius:50%;filter:blur(60px);opacity:0.08;pointer-events:none;
-  transition:opacity 0.3s;
-}
-.bento-card:hover .bento-glow{opacity:0.15}
-
-.bento-icon{font-size:28px;margin-bottom:1.25rem}
-.bento-title{font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px;letter-spacing:-0.02em}
-.bento-body{font-size:13px;color:var(--text2);line-height:1.65}
-
-.mini-viz{margin-top:1.5rem}
-.mini-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.mini-bar-label{font-size:10px;font-family:var(--mono);color:var(--text3);min-width:60px}
-.mini-bar-track{flex:1;height:4px;background:var(--bg3);border-radius:2px}
-.mini-bar-fill{height:100%;border-radius:2px}
-.mini-bar-val{font-size:10px;font-family:var(--mono);color:var(--text3);min-width:28px;text-align:right}
+/* BENTO */
+.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
+.fcard{border:1px solid var(--line);border-radius:18px;background:linear-gradient(160deg,var(--panel),rgba(10,14,22,.4));padding:26px;transition:all .3s var(--ease);position:relative;overflow:hidden}
+.fcard:hover{border-color:var(--line2);transform:translateY(-3px)}
+.fcard.span2{grid-column:span 2}
+.fcard .ic{font-size:22px;width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  background:rgba(25,227,210,.08);border:1px solid var(--line2);margin-bottom:20px;color:var(--teal)}
+.fcard h3{font-family:var(--disp);font-weight:700;font-size:18px;letter-spacing:-.01em;margin-bottom:10px}
+.fcard p{font-size:13px;color:var(--text2);line-height:1.65}
+.fcard .glow{position:absolute;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(25,227,210,.12),transparent 70%);top:-50px;right:-50px;opacity:0;transition:opacity .3s}
+.fcard:hover .glow{opacity:1}
+@media(max-width:820px){.bento{grid-template-columns:1fr}.fcard.span2{grid-column:span 1}}
 
 /* CONDITIONS */
-.conditions{padding:6rem 2rem;background:var(--bg1);border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border)}
-.conditions-inner{max-width:1200px;margin:0 auto}
-.conditions-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:3rem}
-.condition-card{
-  border:0.5px solid var(--border);border-radius:16px;
-  padding:1.75rem;background:var(--bg);
-  position:relative;overflow:hidden;
-  transition:all 0.3s;cursor:default;
-}
-.condition-card:hover{border-color:var(--border2);transform:translateY(-4px)}
-.condition-top-bar{position:absolute;top:0;left:0;right:0;height:2px}
-.condition-icon{font-size:32px;margin-bottom:1rem}
-.condition-name{font-size:16px;font-weight:800;color:var(--text);margin-bottom:6px;letter-spacing:-0.01em}
-.condition-desc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:1.25rem}
-.condition-markers{display:flex;flex-wrap:wrap;gap:5px}
-.marker-chip{
-  font-size:10px;font-weight:700;font-family:var(--mono);
-  padding:3px 9px;border-radius:6px;
-  border:0.5px solid var(--border2);color:var(--text3);
-}
+.conds{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:48px}
+.cond{border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:28px;border-top:3px solid}
+.cond .ct{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.cond h3{font-family:var(--disp);font-weight:700;font-size:20px;letter-spacing:-.01em}
+.cond .ref{font-size:10px;color:var(--text4);letter-spacing:.04em}
+.cond .feat{font-size:12.5px;color:var(--text2);line-height:1.7;margin-top:14px}
+.cond .feat b{color:var(--text);font-weight:500}
+@media(max-width:760px){.conds{grid-template-columns:1fr}}
 
-/* 3D PREVIEW SECTION */
-.preview-section{padding:6rem 2rem;max-width:1200px;margin:0 auto;text-align:center}
-.preview-window{
-  border:0.5px solid var(--border);border-radius:20px;
-  overflow:hidden;background:var(--bg1);
-  margin-top:3rem;text-align:left;
-  position:relative;
-}
-.preview-topbar{
-  padding:14px 20px;border-bottom:0.5px solid var(--border);
-  display:flex;align-items:center;gap:8px;
-  background:rgba(8,8,18,0.9);
-}
-.preview-dot{width:10px;height:10px;border-radius:50%}
-.preview-body{
-  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;padding:1.5rem;
-}
-.preview-card{
-  border:0.5px solid var(--border);border-radius:12px;
-  padding:14px;background:var(--bg);
-}
-.pc-label{font-size:10px;font-family:var(--mono);color:var(--text3);margin-bottom:6px;font-weight:700}
-.pc-pct{font-size:26px;font-weight:800;font-family:var(--mono);margin-bottom:6px}
-.pc-bar{height:3px;background:var(--bg3);border-radius:2px;margin-bottom:6px}
-.pc-fill{height:100%;border-radius:2px}
-.pc-status{font-size:10px;font-weight:700;font-family:var(--mono)}
+/* PIPELINE */
+.pipe{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:48px;counter-reset:s}
+.step{border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:22px 18px;position:relative}
+.step .num{font-family:var(--disp);font-weight:800;font-size:13px;width:30px;height:30px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;background:rgba(25,227,210,.08);color:var(--teal);border:1px solid var(--line2);margin-bottom:16px}
+.step h4{font-size:13px;font-weight:600;margin-bottom:8px;letter-spacing:.01em}
+.step p{font-size:11.5px;color:var(--text3);line-height:1.6}
+@media(max-width:900px){.pipe{grid-template-columns:1fr 1fr}}
 
-/* ABOUT */
-.about{padding:6rem 2rem;background:var(--bg1);border-top:0.5px solid var(--border)}
-.about-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
-.about-eyebrow{font-size:11px;font-weight:700;font-family:var(--mono);color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem}
-.about-name{font-size:clamp(28px,3vw,44px);font-weight:800;letter-spacing:-0.03em;line-height:1.15;margin-bottom:1.5rem}
-.about-bio{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:1.5rem}
-.about-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:2rem}
-.about-tag{font-size:11px;font-weight:700;font-family:var(--mono);padding:4px 12px;border-radius:8px;border:0.5px solid var(--border2);color:var(--text3)}
-.about-tag.accent{border-color:rgba(108,99,255,0.4);color:var(--accent);background:rgba(108,99,255,0.06)}
+/* HONEST CALLOUT */
+.honest{border:1px solid var(--line2);border-radius:20px;background:linear-gradient(150deg,rgba(25,227,210,.05),rgba(124,116,255,.04));padding:40px;margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:36px}
+.honest .col h4{font-family:var(--disp);font-size:15px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.honest .col ul{list-style:none;display:flex;flex-direction:column;gap:11px}
+.honest .col li{font-size:13px;color:var(--text2);line-height:1.55;display:flex;gap:10px;align-items:flex-start}
+.honest .col li .mk{flex-shrink:0;margin-top:1px}
+@media(max-width:760px){.honest{grid-template-columns:1fr;padding:28px}}
 
-.about-stats{display:flex;flex-direction:column;gap:14px}
-.about-stat{
-  border:0.5px solid var(--border);border-radius:14px;
-  padding:1.5rem;background:var(--bg);
-  position:relative;overflow:hidden;
-}
-.about-stat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px}
-.about-stat-num{font-size:36px;font-weight:800;font-family:var(--mono);margin-bottom:4px}
-.about-stat-label{font-size:12px;color:var(--text2)}
-
-/* CTA */
-.cta-section{
-  padding:10rem 2rem;text-align:center;
-  position:relative;overflow:hidden;
-}
-.cta-glow1{position:absolute;top:50%;left:30%;transform:translate(-50%,-50%);width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(108,99,255,0.12),transparent 70%);pointer-events:none}
-.cta-glow2{position:absolute;top:50%;left:70%;transform:translate(-50%,-50%);width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,0.08),transparent 70%);pointer-events:none}
-.cta-section h2{font-size:clamp(36px,6vw,72px);font-weight:800;letter-spacing:-0.04em;line-height:1.05;margin-bottom:1.5rem}
-.cta-section h2 span{background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.cta-section p{font-size:17px;color:var(--text2);margin-bottom:3rem;font-weight:400}
+/* CTA STRIP */
+.ctastrip{max-width:1180px;margin:40px auto 0;padding:0 32px}
+.ctastrip .box{border:1px solid var(--line2);border-radius:22px;background:linear-gradient(135deg,rgba(25,227,210,.08),rgba(124,116,255,.06));
+  padding:60px 40px;text-align:center;position:relative;overflow:hidden}
+.ctastrip h2{font-family:var(--disp);font-weight:800;font-size:clamp(26px,4vw,40px);letter-spacing:-.03em}
+.ctastrip p{font-size:14px;color:var(--text2);margin:16px auto 30px;max-width:50ch}
 
 /* FOOTER */
-footer{
-  padding:2rem 2.5rem;border-top:0.5px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-  font-size:12px;color:var(--text3);flex-wrap:wrap;gap:1rem;
-  font-family:var(--mono);
-}
-
-/* SCROLL ANIMATIONS */
-.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease}
-.reveal.visible{opacity:1;transform:translateY(0)}
-.reveal-delay-1{transition-delay:0.1s}
-.reveal-delay-2{transition-delay:0.2s}
-.reveal-delay-3{transition-delay:0.3s}
-
-@media(max-width:900px){
-  .nav-links{display:none}
-  .features-bento{grid-template-columns:1fr}
-  .bento-card.wide{grid-column:span 1}
-  .conditions-grid{grid-template-columns:1fr 1fr}
-  .about-inner{grid-template-columns:1fr}
-  .preview-body{grid-template-columns:1fr 1fr}
-  .stat-strip{flex-direction:column}
-  .stat-item{border-right:none;border-bottom:0.5px solid var(--border)}
-}
+footer{border-top:1px solid var(--line);margin-top:90px;padding:50px 32px 40px}
+.fin{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:flex-start}
+.fin .auth{font-size:13px;color:var(--text2);line-height:1.8;max-width:50ch}
+.fin .auth b{color:var(--text);font-family:var(--disp);font-size:15px}
+.flinks{display:flex;gap:24px;font-size:13px;color:var(--text2)}
+.flinks a:hover{color:var(--teal)}
+.fnote{max-width:1180px;margin:40px auto 0;font-size:10.5px;color:var(--text4);line-height:1.7;border-top:1px solid var(--line);padding-top:24px}
+.fnote b{color:var(--text3)}
 </style>
 </head>
 <body>
+<canvas id="bg"></canvas>
+<div class="wrap">
 
-<nav id="navbar">
-  <a href="index.html" class="nav-logo">ENDORISK</a>
-  <div class="nav-links">
+<nav id="nav">
+  <div class="brand"><span class="d"></span><b>ENDORISK</b></div>
+  <div class="nlinks">
     <a href="#features">Platform</a>
     <a href="#conditions">Conditions</a>
-    <a href="about.html">Research</a>
-  </div>
-  <div class="nav-right">
-    <span class="nav-chip">v2.0 · UT AUSTIN</span>
-    <a href="about.html" class="nav-btn ghost">Methodology</a>
-    <a href="app.html" class="nav-btn primary">Launch App →</a>
+    <a href="#method">Method</a>
+    <a href="about.html">About</a>
+    <a class="cta" href="app.html">Launch Dashboard →</a>
   </div>
 </nav>
 
-<section class="hero">
-  <canvas id="hero-canvas"></canvas>
-  <div class="hero-content">
-    <div class="hero-badge"><span class="badge-pulse"></span>Independent Research · Aryan Shoaei · UT Austin 2025–2026</div>
-    <h1>
-      <span class="line1">Endocrine Risk</span>
-      <span class="line2">Intelligence</span>
-    </h1>
-    <p class="hero-sub">A multi-model machine learning platform for real-time risk stratification across four major endocrine disorders — powered by published clinical data and interactive 3D visualization.</p>
-    <div class="hero-actions">
-      <a href="app.html" class="btn-hero primary">Launch Platform <span>→</span></a>
-      <a href="report.html" class="btn-hero ghost">View Sample Report</a>
-    </div>
-    <div class="stat-strip">
-      <div class="stat-item"><div class="stat-num" data-target="4">0</div><div class="stat-label">Conditions Modeled</div></div>
-      <div class="stat-item"><div class="stat-num" data-target="12">0</div><div class="stat-label">Clinical Biomarkers</div></div>
-      <div class="stat-item"><div class="stat-num" data-target="78" data-suffix=".5%">0</div><div class="stat-label">Model Accuracy</div></div>
-      <div class="stat-item"><div class="stat-num" data-target="84" data-prefix="0." data-nosuffix="true">0</div><div class="stat-label">AUC-ROC Score</div></div>
-    </div>
+<header class="hero">
+  <div class="badge rv"><span class="pd"></span>Interactive Clinical Visualization · Educational</div>
+  <h1 class="rv">See endocrine risk <span class="g">come alive</span> from the biomarkers up.</h1>
+  <p class="sub rv">EndoRisk is an interactive tool that maps twelve clinical biomarkers and twelve symptoms onto four endocrine conditions — thyroid dysfunction, type 2 diabetes, metabolic syndrome, and adrenal insufficiency — and renders the result as a living, holographic endocrine system that responds in real time.</p>
+  <div class="herobtns rv">
+    <a class="btn p" href="app.html">Launch the dashboard →</a>
+    <a class="btn s" href="about.html">Read the methodology</a>
   </div>
-</section>
+  <div class="disc-line rv">An educational demonstration built on published reference ranges. Scoring is transparent and rule-based — there are no trained machine-learning models and no diagnostic claims. Not a medical device.</div>
+</header>
 
-<!-- MARQUEE -->
-<div class="marquee-wrap">
-  <div class="marquee-inner" id="marquee"></div>
+<div class="stats">
+  <div class="stat rv"><div class="n" data-to="4">0</div><div class="l">Endocrine conditions modeled simultaneously</div></div>
+  <div class="stat rv"><div class="n" data-to="12">0</div><div class="l">Clinical biomarkers with live input</div></div>
+  <div class="stat rv"><div class="n" data-to="12" data-suf="">0</div><div class="l">Weighted clinical symptoms feeding scores</div></div>
+  <div class="stat rv"><div class="n" data-to="0" data-zero="Zero">0</div><div class="l">Patient data that leaves your browser</div></div>
 </div>
 
-<!-- FEATURES -->
-<section class="features" id="features">
-  <div class="section-eyebrow reveal">Platform Capabilities</div>
-  <h2 class="section-title reveal">Built to research standards.<br>Designed to impress.</h2>
-  <p class="section-sub reveal">Every model traces to published clinical guidelines. Every visualization tells a clinical story.</p>
+<section class="blk" id="features">
+  <div class="eyebrow rv">The Platform</div>
+  <div class="h2 rv">Everything reacts. Nothing is hidden.</div>
+  <p class="lead rv">Adjust a biomarker and watch the organ glow, the gauge swing, the narrative rewrite itself. Every number on screen traces back to a rule you can inspect.</p>
+  <div class="bento">
+    <div class="fcard span2 rv"><div class="glow"></div><div class="ic">◉</div><h3>Holographic 3D endocrine field</h3><p>A real-time Three.js projection of the endocrine system. Organs pulse and shift color by risk band, and animated hormone-axis pathways trace the HPT, HPA, and pancreatic loops. Drag to rotate; click an organ to focus its condition.</p></div>
+    <div class="fcard rv"><div class="glow"></div><div class="ic">◐</div><h3>Transparent scoring</h3><p>Each risk index is a documented rule built on published reference midpoints — no black box.</p></div>
+    <div class="fcard rv"><div class="glow"></div><div class="ic">✚</div><h3>Symptom engine</h3><p>Twelve weighted clinical symptoms feed directly into the relevant condition scores.</p></div>
+    <div class="fcard rv"><div class="glow"></div><div class="ic">⟳</div><h3>Intervention simulator</h3><p>Model a "what-if": shift a biomarker and see the projected change across all four indices.</p></div>
+    <div class="fcard rv"><div class="glow"></div><div class="ic">⇄</div><h3>Patient comparison</h3><p>Run two profiles side by side with comparative bars across every condition.</p></div>
+    <div class="fcard span2 rv"><div class="glow"></div><div class="ic">▤</div><h3>Trajectory &amp; reports</h3><p>A longitudinal view tracks the risk indices across simulated visits, and the report generator produces a clean, print-ready clinical summary with charts, a biomarker table, and an auto-written narrative.</p></div>
+  </div>
+</section>
 
-  <div class="features-bento">
-    <div class="bento-card wide reveal">
-      <div class="bento-glow" style="background:var(--accent)"></div>
-      <div class="bento-icon">⬡</div>
-      <div class="bento-title">3D Endocrine System Visualization</div>
-      <div class="bento-body">Interactive Three.js 3D anatomical model. Organs glow and pulse in real time based on their associated risk scores — thyroid lights cyan when thyroid risk is elevated, pancreas turns red as glucose climbs.</div>
-      <div class="mini-viz">
-        <div class="mini-bar-row"><span class="mini-bar-label">Thyroid</span><div class="mini-bar-track"><div class="mini-bar-fill" style="width:24%;background:#00d4ff"></div></div><span class="mini-bar-val">24%</span></div>
-        <div class="mini-bar-row"><span class="mini-bar-label">Pancreas</span><div class="mini-bar-track"><div class="mini-bar-fill" style="width:61%;background:#ff4466"></div></div><span class="mini-bar-val">61%</span></div>
-        <div class="mini-bar-row"><span class="mini-bar-label">Adrenals</span><div class="mini-bar-track"><div class="mini-bar-fill" style="width:18%;background:#00ff88"></div></div><span class="mini-bar-val">18%</span></div>
-        <div class="mini-bar-row"><span class="mini-bar-label">Liver</span><div class="mini-bar-track"><div class="mini-bar-fill" style="width:45%;background:#ffaa00"></div></div><span class="mini-bar-val">45%</span></div>
-      </div>
+<section class="blk" id="conditions">
+  <div class="eyebrow rv">Conditions</div>
+  <div class="h2 rv">Four axes, one model.</div>
+  <p class="lead rv">Each condition is scored from its own biomarker set against the reference framing of a major clinical guideline.</p>
+  <div class="conds">
+    <div class="cond rv" style="border-top-color:var(--teal)">
+      <div class="ct"><h3>Thyroid Dysfunction</h3><span class="ref">ATA · Jonklaas 2014</span></div>
+      <div class="feat"><b>Drivers:</b> TSH, Free T4, Free T3. Rising TSH with low Free T4/T3 pushes the index toward a hypothyroid pattern.</div>
     </div>
-
-    <div class="bento-card reveal reveal-delay-1">
-      <div class="bento-glow" style="background:var(--cyan)"></div>
-      <div class="bento-icon">🧪</div>
-      <div class="bento-title">12-Biomarker Live Engine</div>
-      <div class="bento-body">Four simultaneous logistic regression classifiers update in real time as you adjust clinical biomarkers. Every slider change recalculates all four risk models simultaneously.</div>
+    <div class="cond rv" style="border-top-color:var(--coral)">
+      <div class="ct"><h3>Type 2 Diabetes</h3><span class="ref">ADA Standards 2024</span></div>
+      <div class="feat"><b>Drivers:</b> fasting glucose, HbA1c, BMI, fasting insulin. Anchored to ADA diagnostic thresholds (HbA1c ≥ 6.5%, glucose ≥ 126 mg/dL).</div>
     </div>
-
-    <div class="bento-card reveal reveal-delay-2">
-      <div class="bento-glow" style="background:var(--green)"></div>
-      <div class="bento-icon">🩺</div>
-      <div class="bento-title">Symptom-Weighted Scoring</div>
-      <div class="bento-body">30+ clinical symptoms mapped to specific conditions. Checking "cold intolerance" boosts thyroid risk. Checking "polyuria" raises diabetes probability. Symptoms feed directly into the model.</div>
+    <div class="cond rv" style="border-top-color:var(--amber)">
+      <div class="ct"><h3>Metabolic Syndrome</h3><span class="ref">NCEP ATP III / IDF</span></div>
+      <div class="feat"><b>Drivers:</b> triglycerides, HDL, BMI, glucose. Reflects the atherogenic clustering at the heart of ATP III criteria.</div>
     </div>
-
-    <div class="bento-card reveal">
-      <div class="bento-glow" style="background:var(--amber)"></div>
-      <div class="bento-icon">⚡</div>
-      <div class="bento-title">Intervention Simulator</div>
-      <div class="bento-body">"What if" modeling — simulate the effect of clinical interventions. Drop glucose by 30 mg/dL, see projected risk reduction across all four conditions in real time.</div>
-    </div>
-
-    <div class="bento-card reveal reveal-delay-1">
-      <div class="bento-glow" style="background:var(--pink)"></div>
-      <div class="bento-icon">📋</div>
-      <div class="bento-title">Publication-Quality Reports</div>
-      <div class="bento-body">Auto-generated clinical reports with full biomarker tables, radar charts, driver analysis, and clinical narrative. Print directly to PDF for EHR drag-and-drop.</div>
-    </div>
-
-    <div class="bento-card reveal reveal-delay-2">
-      <div class="bento-glow" style="background:var(--accent)"></div>
-      <div class="bento-icon">⚖️</div>
-      <div class="bento-title">Patient Comparison Mode</div>
-      <div class="bento-body">Load two patient profiles side by side. All four risk models visualized comparatively with grouped bar charts — like a real clinical rounds tool.</div>
+    <div class="cond rv" style="border-top-color:var(--mint)">
+      <div class="ct"><h3>Adrenal Insufficiency</h3><span class="ref">Endocrine Soc. 2016</span></div>
+      <div class="feat"><b>Drivers:</b> AM cortisol, ACTH, DHEA-S. Low morning cortisol drives the index; the ACTH pattern hints at primary vs. central etiology.</div>
     </div>
   </div>
 </section>
 
-<!-- CONDITIONS -->
-<section class="conditions" id="conditions">
-  <div class="conditions-inner">
-    <div class="section-eyebrow reveal">What We Model</div>
-    <h2 class="section-title reveal">Four endocrine conditions.<br>One unified platform.</h2>
-    <div class="conditions-grid">
-      <div class="condition-card reveal">
-        <div class="condition-top-bar" style="background:linear-gradient(90deg,#00d4ff,transparent)"></div>
-        <div class="condition-icon">🫀</div>
-        <div class="condition-name">Thyroid Dysfunction</div>
-        <div class="condition-desc">Subclinical and overt hypo/hyperthyroidism via TSH, Free T4, and T3 pattern analysis. ATA guidelines (Jonklaas et al., 2014).</div>
-        <div class="condition-markers">
-          <span class="marker-chip">TSH</span><span class="marker-chip">Free T4</span><span class="marker-chip">Free T3</span>
-        </div>
-      </div>
-      <div class="condition-card reveal reveal-delay-1">
-        <div class="condition-top-bar" style="background:linear-gradient(90deg,#ff4466,transparent)"></div>
-        <div class="condition-icon">🩸</div>
-        <div class="condition-name">Type 2 Diabetes</div>
-        <div class="condition-desc">Logistic regression on PIMA Indians Dataset (n=768). 78.5% accuracy, 0.84 AUC-ROC. ADA Standards of Medical Care (2024).</div>
-        <div class="condition-markers">
-          <span class="marker-chip">Glucose</span><span class="marker-chip">HbA1c</span><span class="marker-chip">BMI</span><span class="marker-chip">Insulin</span>
-        </div>
-      </div>
-      <div class="condition-card reveal reveal-delay-2">
-        <div class="condition-top-bar" style="background:linear-gradient(90deg,#ffaa00,transparent)"></div>
-        <div class="condition-icon">⚡</div>
-        <div class="condition-name">Metabolic Syndrome</div>
-        <div class="condition-desc">NCEP ATP III / IDF consensus criteria. Triglycerides, HDL, BMI, and fasting glucose as composite atherogenic risk factors.</div>
-        <div class="condition-markers">
-          <span class="marker-chip">Triglycerides</span><span class="marker-chip">HDL</span><span class="marker-chip">BMI</span>
-        </div>
-      </div>
-      <div class="condition-card reveal reveal-delay-3">
-        <div class="condition-top-bar" style="background:linear-gradient(90deg,#00ff88,transparent)"></div>
-        <div class="condition-icon">🧪</div>
-        <div class="condition-name">Adrenal Insufficiency</div>
-        <div class="condition-desc">AM cortisol, ACTH, and DHEA-S axis pattern. Endocrine Society clinical practice guidelines (Bornstein et al., 2016).</div>
-        <div class="condition-markers">
-          <span class="marker-chip">AM Cortisol</span><span class="marker-chip">ACTH</span><span class="marker-chip">DHEA-S</span>
-        </div>
-      </div>
+<section class="blk" id="method">
+  <div class="eyebrow rv">How It Works</div>
+  <div class="h2 rv">From raw labs to a risk band, in five transparent steps.</div>
+  <div class="pipe">
+    <div class="step rv"><div class="num">01</div><h4>Biomarker input</h4><p>Twelve clinical values entered via live sliders, each with its reference range.</p></div>
+    <div class="step rv"><div class="num">02</div><h4>Normalize</h4><p>Each value is scored against its clinical reference midpoint as a standardized distance.</p></div>
+    <div class="step rv"><div class="num">03</div><h4>Weight</h4><p>Hand-specified coefficients combine the relevant biomarkers and symptoms per condition.</p></div>
+    <div class="step rv"><div class="num">04</div><h4>Transform</h4><p>A logistic (sigmoid) function maps the weighted sum to a 0–1 index.</p></div>
+    <div class="step rv"><div class="num">05</div><h4>Stratify</h4><p>Banded as Low (&lt;25%), Moderate (25–50%), or Elevated (&gt;50%).</p></div>
+  </div>
+
+  <div class="honest rv">
+    <div class="col">
+      <h4 style="color:var(--mint)"><span>✓</span>What EndoRisk is</h4>
+      <ul>
+        <li><span class="mk" style="color:var(--mint)">›</span>An interactive teaching tool that makes the relationship between biomarkers and endocrine risk tangible and explorable.</li>
+        <li><span class="mk" style="color:var(--mint)">›</span>A fully transparent, rule-based scoring engine grounded in published clinical reference ranges.</li>
+        <li><span class="mk" style="color:var(--mint)">›</span>A self-contained, privacy-preserving web app — every calculation runs locally in your browser.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4 style="color:var(--coral)"><span>✕</span>What it is not</h4>
+      <ul>
+        <li><span class="mk" style="color:var(--coral)">›</span>Not a trained or validated machine-learning model, and it reports no diagnostic-accuracy statistics.</li>
+        <li><span class="mk" style="color:var(--coral)">›</span>Not a medical device, and not a substitute for clinical evaluation, laboratory interpretation, or a physician.</li>
+        <li><span class="mk" style="color:var(--coral)">›</span>Not intended for diagnosis, screening, or any real patient decision-making.</li>
+      </ul>
     </div>
   </div>
 </section>
 
-<!-- PREVIEW -->
-<section class="preview-section reveal">
-  <div class="section-eyebrow">Live Preview</div>
-  <h2 class="section-title" style="margin:0 auto 1rem;max-width:600px">See the platform in action</h2>
-  <p style="color:var(--text2);font-size:15px;margin-bottom:0">Risk scores animate automatically. Everything updates in real time.</p>
-  <div class="preview-window">
-    <div class="preview-topbar">
-      <div class="preview-dot" style="background:#ff4466"></div>
-      <div class="preview-dot" style="background:#ffaa00"></div>
-      <div class="preview-dot" style="background:#00ff88"></div>
-      <span style="font-size:11px;font-family:var(--mono);color:var(--text3);margin-left:8px">EndoRisk · Clinical Dashboard · v2.0</span>
-    </div>
-    <div class="preview-body" id="preview-cards"></div>
-    <div style="padding:1rem 1.5rem 1.25rem;border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-      <div style="font-size:11px;font-family:var(--mono);color:var(--text3)">Sample patient · live simulation</div>
-      <a href="app.html" style="font-size:12px;font-weight:700;font-family:var(--mono);color:var(--accent);text-decoration:none">Open full platform →</a>
-    </div>
+<div class="ctastrip">
+  <div class="box rv">
+    <h2>Open the dashboard.</h2>
+    <p>The full 3D field, live gauges, symptom engine, and intervention simulator are one click away.</p>
+    <a class="btn p" href="app.html">Launch EndoRisk →</a>
   </div>
-</section>
-
-<!-- ABOUT -->
-<section class="about">
-  <div class="about-inner">
-    <div class="reveal">
-      <div class="about-eyebrow">The Researcher</div>
-      <div class="about-name">Aryan Shoaei</div>
-      <p class="about-bio">Pre-medicine student at the University of Texas at Austin pursuing a B.S. in Biology with a Spanish for Healthcare Professionals Certificate. Conducting independent microbiology research through the Freshman Research Initiative — investigating microbial communities in insects via DNA extraction, PCR, 16S rRNA sequencing, and R-based diversity analysis.</p>
-      <p class="about-bio">EndoRisk was built as an independent computational research initiative — applying machine learning classification to clinical endocrinology data, bridging wet lab skills with data-driven approaches to metabolic disease risk stratification.</p>
-      <div class="about-tags">
-        <span class="about-tag accent">GPA 4.0</span>
-        <span class="about-tag">UT Austin · Biology B.S.</span>
-        <span class="about-tag">Freshman Research Initiative</span>
-        <span class="about-tag">QuestBridge Finalist</span>
-        <span class="about-tag">Dell Scholar</span>
-        <span class="about-tag">Momeni Scholar</span>
-        <span class="about-tag">Dell Seton MICU Volunteer</span>
-      </div>
-      <div style="margin-top:2rem;display:flex;gap:10px">
-        <a href="app.html" class="btn-hero primary" style="font-size:13px;padding:11px 24px">Launch Platform →</a>
-        <a href="about.html" class="btn-hero ghost" style="font-size:13px;padding:11px 24px">Read Methodology</a>
-      </div>
-    </div>
-    <div class="about-stats reveal">
-      <div class="about-stat" style="border-left-color:var(--accent)">
-        <div class="about-stat::before" style="background:var(--accent)"></div>
-        <div class="about-stat-num" style="color:var(--accent)">768</div>
-        <div class="about-stat-label">Patient records in primary training dataset (PIMA Indians Diabetes Dataset, NIDDK)</div>
-      </div>
-      <div class="about-stat">
-        <div class="about-stat-num" style="color:var(--cyan)">5</div>
-        <div class="about-stat-label">Published clinical guidelines referenced — ADA, ATA, Endocrine Society, NCEP ATP III, IDF</div>
-      </div>
-      <div class="about-stat">
-        <div class="about-stat-num" style="color:var(--green)">0.84</div>
-        <div class="about-stat-label">AUC-ROC score — model discriminative performance on held-out test set</div>
-      </div>
-      <div class="about-stat">
-        <div class="about-stat-num" style="color:var(--amber)">4</div>
-        <div class="about-stat-label">Endocrine conditions modeled with real-time simultaneous risk stratification</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-section">
-  <div class="cta-glow1"></div>
-  <div class="cta-glow2"></div>
-  <h2 class="reveal">Ready to explore<br><span>the platform?</span></h2>
-  <p class="reveal">Adjust real clinical biomarkers. Watch a 3D body respond in real time.</p>
-  <div class="reveal" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-    <a href="app.html" class="btn-hero primary">Launch Platform →</a>
-    <a href="report.html" class="btn-hero ghost">View Sample Report</a>
-  </div>
-</section>
+</div>
 
 <footer>
-  <div>ENDORISK · Aryan Shoaei · University of Texas at Austin · 2025–2026</div>
-  <div>Research & educational purposes only · Not for clinical use</div>
+  <div class="fin">
+    <div class="auth">
+      <b>Aryan Shoaei</b><br>
+      Pre-medicine · University of Texas at Austin<br>
+      An independent computational + clinical informatics project.
+    </div>
+    <div class="flinks">
+      <a href="app.html">Dashboard</a>
+      <a href="report.html">Report</a>
+      <a href="about.html">Methodology</a>
+    </div>
+  </div>
+  <div class="fnote">
+    <b>Educational demonstration only.</b> EndoRisk applies transparent, hand-specified scoring rules to user-entered values using published reference ranges (ADA, ATA, NCEP ATP III, Endocrine Society). It does not use trained machine-learning models, was not validated against patient outcomes, and is not a medical device. Do not use it for diagnosis, screening, or clinical decision-making.
+  </div>
 </footer>
 
+</div>
+
 <script>
-// ============================================================
-// HERO CANVAS — PARTICLE NETWORK
-// ============================================================
-const canvas=document.getElementById('hero-canvas');
-const ctx=canvas.getContext('2d');
-let W,H,particles=[];
+// nav scroll state
+const nav=document.getElementById('nav');
+addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>20));
 
-function resizeCanvas(){
-  W=canvas.width=window.innerWidth;
-  H=canvas.height=window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener('resize',resizeCanvas);
+// reveal on scroll
+const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
+document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=(i%6)*0.05+'s';io.observe(el);});
 
-class Particle{
-  constructor(){this.reset()}
-  reset(){
-    this.x=Math.random()*W;
-    this.y=Math.random()*H;
-    this.vx=(Math.random()-0.5)*0.4;
-    this.vy=(Math.random()-0.5)*0.4;
-    this.r=Math.random()*1.5+0.5;
-    this.alpha=Math.random()*0.4+0.1;
-    this.color=Math.random()>0.6?'108,99,255':Math.random()>0.5?'0,212,255':'0,255,136';
-  }
-  update(){
-    this.x+=this.vx;this.y+=this.vy;
-    if(this.x<0||this.x>W||this.y<0||this.y>H)this.reset();
-  }
-  draw(){
-    ctx.beginPath();
-    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
-    ctx.fillStyle=`rgba(${this.color},${this.alpha})`;
-    ctx.fill();
-  }
-}
+// count-up stats
+const cio=new IntersectionObserver((es)=>es.forEach(e=>{
+  if(!e.isIntersecting)return;const el=e.target;cio.unobserve(el);
+  if(el.dataset.zero){el.textContent=el.dataset.zero;return;}
+  const to=+el.dataset.to;let n=0;const dur=1100,t0=performance.now();
+  const tick=now=>{const p=Math.min(1,(now-t0)/dur);n=Math.round(to*(1-Math.pow(1-p,3)));el.textContent=n;if(p<1)requestAnimationFrame(tick);};
+  requestAnimationFrame(tick);
+}),{threshold:.5});
+document.querySelectorAll('.stat .n').forEach(el=>cio.observe(el));
 
-for(let i=0;i<120;i++)particles.push(new Particle());
-
-function drawConnections(){
-  for(let i=0;i<particles.length;i++){
-    for(let j=i+1;j<particles.length;j++){
-      const dx=particles[i].x-particles[j].x;
-      const dy=particles[i].y-particles[j].y;
-      const dist=Math.sqrt(dx*dx+dy*dy);
-      if(dist<120){
-        ctx.beginPath();
-        ctx.moveTo(particles[i].x,particles[i].y);
-        ctx.lineTo(particles[j].x,particles[j].y);
-        ctx.strokeStyle=`rgba(108,99,255,${0.08*(1-dist/120)})`;
-        ctx.lineWidth=0.5;
-        ctx.stroke();
+// constellation background
+(function(){
+  const c=document.getElementById('bg'),x=c.getContext('2d');let W,H,pts=[];
+  function rs(){W=c.width=innerWidth;H=c.height=innerHeight;}
+  rs();addEventListener('resize',rs);
+  const N=Math.min(80,Math.floor(innerWidth/22));
+  for(let i=0;i<N;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25});
+  let mx=-999,my=-999;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+  function loop(){
+    x.clearRect(0,0,W,H);
+    for(const p of pts){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;}
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.hypot(dx,dy);
+        if(d<140){x.strokeStyle=`rgba(25,227,210,${0.10*(1-d/140)})`;x.lineWidth=1;
+          x.beginPath();x.moveTo(pts[i].x,pts[i].y);x.lineTo(pts[j].x,pts[j].y);x.stroke();}
       }
+      const dm=Math.hypot(pts[i].x-mx,pts[i].y-my);
+      if(dm<180){x.strokeStyle=`rgba(124,116,255,${0.18*(1-dm/180)})`;x.beginPath();x.moveTo(pts[i].x,pts[i].y);x.lineTo(mx,my);x.stroke();}
+      x.fillStyle='rgba(25,227,210,.55)';x.beginPath();x.arc(pts[i].x,pts[i].y,1.5,0,7);x.fill();
     }
+    requestAnimationFrame(loop);
   }
-}
-
-function animateHero(){
-  ctx.clearRect(0,0,W,H);
-  // Radial gradient overlay
-  const grad=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,H*0.8);
-  grad.addColorStop(0,'rgba(108,99,255,0.04)');
-  grad.addColorStop(1,'transparent');
-  ctx.fillStyle=grad;
-  ctx.fillRect(0,0,W,H);
-  drawConnections();
-  particles.forEach(p=>{p.update();p.draw()});
-  requestAnimationFrame(animateHero);
-}
-animateHero();
-
-// ============================================================
-// MARQUEE
-// ============================================================
-const marqueeItems=[
-  'Logistic Regression','Three.js 3D Visualization','Thyroid Dysfunction','Type 2 Diabetes',
-  'Metabolic Syndrome','Adrenal Insufficiency','ADA Guidelines 2024','ATA Clinical Standards',
-  'Endocrine Society','NCEP ATP III','HbA1c Analysis','TSH · Free T4 · Free T3',
-  'Real-Time Risk Engine','Clinical Biomarkers','PIMA Indians Dataset','AUC-ROC 0.84',
-  'Logistic Regression','Three.js 3D Visualization','Thyroid Dysfunction','Type 2 Diabetes',
-  'Metabolic Syndrome','Adrenal Insufficiency','ADA Guidelines 2024','ATA Clinical Standards',
-];
-const marqueeEl=document.getElementById('marquee');
-marqueeEl.innerHTML=marqueeItems.map(i=>`<span class="marquee-item"><span class="marquee-dot"></span>${i}</span>`).join('');
-
-// ============================================================
-// COUNTER ANIMATION
-// ============================================================
-function animateCounters(){
-  document.querySelectorAll('.stat-num[data-target]').forEach(el=>{
-    const target=parseInt(el.dataset.target);
-    const prefix=el.dataset.prefix||'';
-    const suffix=el.dataset.nosuffix?'':el.dataset.suffix||'';
-    let current=0;
-    const step=target/60;
-    const timer=setInterval(()=>{
-      current=Math.min(current+step,target);
-      el.textContent=prefix+Math.round(current)+suffix;
-      if(current>=target)clearInterval(timer);
-    },16);
-  });
-}
-setTimeout(animateCounters,400);
-
-// ============================================================
-// PREVIEW CARDS ANIMATION
-// ============================================================
-const previewData=[
-  {name:'Thyroid',color:'#00d4ff',values:[18,22,26,24,28,23]},
-  {name:'Type 2 DM',color:'#ff4466',values:[32,38,42,36,44,40]},
-  {name:'Metabolic',color:'#ffaa00',values:[28,33,30,35,32,37]},
-  {name:'Adrenal',color:'#00ff88',values:[14,16,12,18,15,13]}
-];
-let previewTick=0;
-
-function updatePreview(){
-  document.getElementById('preview-cards').innerHTML=previewData.map(d=>{
-    const val=d.values[previewTick%d.values.length];
-    const label=val<25?'Low risk':val<50?'Moderate':val<75?'Elevated':'High risk';
-    return`<div class="preview-card">
-      <div class="pc-label">${d.name}</div>
-      <div class="pc-pct" style="color:${d.color}">${val}%</div>
-      <div class="pc-bar"><div class="pc-fill" style="width:${val}%;background:${d.color};box-shadow:0 0 6px ${d.color}44;transition:width 0.6s ease"></div></div>
-      <div class="pc-status" style="color:${d.color}">${label}</div>
-    </div>`;
-  }).join('');
-  previewTick++;
-}
-updatePreview();
-setInterval(updatePreview,2500);
-
-// ============================================================
-// SCROLL REVEAL
-// ============================================================
-const revealObserver=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
-},{threshold:0.08});
-document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
-
-// ============================================================
-// NAV SCROLL EFFECT
-// ============================================================
-window.addEventListener('scroll',()=>{
-  const nav=document.getElementById('navbar');
-  if(window.scrollY>50){nav.style.background='rgba(4,4,10,0.95)';nav.style.borderBottomColor='rgba(108,99,255,0.2)'}
-  else{nav.style.background='rgba(4,4,10,0.7)';nav.style.borderBottomColor='rgba(108,99,255,0.12)'}
-});
+  loop();
+})();
 </script>
-<script src="loader.js"></script>
 </body>
 </html>

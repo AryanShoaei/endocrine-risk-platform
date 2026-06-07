@@ -4,23 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EndoRisk — 404</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--bg:#05070b;--teal:#19e3d2;--violet:#7c74ff;--text:#e7eef1;--text2:#8ea0a8;--text3:#566570;--line2:rgba(120,200,210,.22)}
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--accent:#6c63ff;--cyan:#00d4ff;--font:'Syne',sans-serif;--mono:'JetBrains Mono',monospace}
-body{font-family:var(--font);background:#04040a;color:#e8e6f0;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem}
-.num{font-size:clamp(80px,20vw,180px);font-weight:800;letter-spacing:-0.06em;line-height:1;background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem}
-h1{font-size:24px;font-weight:800;margin-bottom:1rem;letter-spacing:-0.02em}
-p{font-size:14px;color:#9896b0;margin-bottom:2rem;font-family:var(--mono)}
-a{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;padding:12px 28px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#4a43cc);color:#fff;text-decoration:none;transition:all 0.2s}
-a:hover{box-shadow:0 0 30px rgba(108,99,255,0.5);transform:translateY(-1px)}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem;
+  background-image:radial-gradient(700px 500px at 50% 0%,rgba(25,227,210,.08),transparent 60%)}
+.num{font-family:'Syne',sans-serif;font-size:clamp(90px,22vw,200px);font-weight:800;letter-spacing:-.06em;line-height:1;
+  background:linear-gradient(135deg,var(--teal),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem}
+h1{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;margin-bottom:.8rem;letter-spacing:-.02em}
+p{font-size:13px;color:var(--text2);margin-bottom:2rem;letter-spacing:.03em}
+a{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:12px 26px;border-radius:10px;
+  background:linear-gradient(135deg,#0fb9ab,var(--violet));color:#fff;text-decoration:none;transition:all .2s}
+a:hover{box-shadow:0 0 30px rgba(25,227,210,.4);transform:translateY(-1px)}
+.dots{display:flex;gap:7px;justify-content:center;margin-bottom:2rem}
+.dots span{width:7px;height:7px;border-radius:50%;background:var(--text3);animation:p 1.4s infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes p{0%,100%{opacity:.3}50%{opacity:1;background:var(--teal)}}
 </style>
 </head>
 <body>
 <div>
   <div class="num">404</div>
   <h1>Biomarker not found</h1>
-  <p>This page doesn't exist in our clinical database.</p>
+  <div class="dots"><span></span><span></span><span></span></div>
+  <p>This page isn't part of the EndoRisk platform.</p>
   <a href="index.html">← Return to EndoRisk</a>
 </div>
 </body>

@@ -2,382 +2,272 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="shared.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EndoRisk — Clinical Report</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#04040a;--bg1:#080812;--bg2:#0c0c1a;--bg3:#10101f;
-  --text:#e8e6f0;--text2:#9896b0;--text3:#4a485a;--text4:#2a2838;
-  --accent:#6c63ff;--cyan:#00d4ff;--green:#00ff88;--amber:#ffaa00;--red:#ff4466;
-  --border:rgba(108,99,255,0.12);--border2:rgba(108,99,255,0.25);
-  --font:'Syne',sans-serif;--mono:'JetBrains Mono',monospace;
+  --bg:#05070b;--bg1:#080b12;--panel:#0a0e16;--panel2:#0d121c;
+  --line:rgba(120,200,210,0.10);--line2:rgba(120,200,210,0.22);
+  --text:#e7eef1;--text2:#8ea0a8;--text3:#566570;--text4:#33414b;
+  --teal:#19e3d2;--teal2:#0fb9ab;--violet:#7c74ff;
+  --mint:#34e6a8;--amber:#ffba4a;--coral:#ff5d73;
+  --disp:'Syne',sans-serif;--mono:'JetBrains Mono',monospace;
+  --ease:cubic-bezier(.22,.61,.36,1);
 }
-body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:13px;min-height:100vh}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.5;
+  background-image:radial-gradient(900px 600px at 20% -10%,rgba(25,227,210,.06),transparent 60%)}
+::selection{background:rgba(25,227,210,.25)}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:var(--line2);border-radius:4px}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;color:inherit}
 
-.topbar{
-  height:56px;display:flex;align-items:center;justify-content:space-between;
-  padding:0 1.5rem;border-bottom:0.5px solid var(--border);
-  background:rgba(8,8,18,0.9);position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);
-}
-.logo{font-size:18px;font-weight:800;letter-spacing:-0.03em;background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
-.topbar-right{display:flex;gap:8px}
-.btn{font-size:12px;font-weight:700;padding:7px 16px;border-radius:8px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s}
-.btn:hover{background:var(--bg2);color:var(--text);border-color:var(--accent)}
-.btn.green{background:var(--green);color:#000;border-color:transparent;font-weight:800}
-.btn.green:hover{opacity:0.85;transform:translateY(-1px)}
+nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:18px;padding:14px 28px;
+  background:rgba(8,11,18,.78);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.brand{font-family:var(--disp);font-weight:800;font-size:20px;letter-spacing:-.04em;display:flex;align-items:center;gap:9px}
+.brand .d{width:9px;height:9px;border-radius:2px;background:linear-gradient(135deg,var(--teal),var(--violet))}
+.brand b{background:linear-gradient(110deg,var(--teal),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nlinks{margin-left:auto;display:flex;gap:10px;align-items:center}
+.tag{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);border:1px solid rgba(255,186,74,.3);background:rgba(255,186,74,.07);padding:6px 11px;border-radius:8px}
+.btn{font-size:12px;font-weight:600;padding:9px 16px;border-radius:9px;border:1px solid var(--line2);background:rgba(13,18,28,.6);transition:all .2s var(--ease);display:inline-flex;align-items:center;gap:7px}
+.btn:hover{border-color:var(--teal2)}
+.btn.p{background:linear-gradient(135deg,var(--teal2),var(--violet));border:none;color:#fff}
+.btn.p:hover{box-shadow:0 0 24px rgba(25,227,210,.35)}
 
-.main{max-width:960px;margin:0 auto;padding:2rem}
+.layout{display:grid;grid-template-columns:340px 1fr;gap:0;min-height:calc(100vh - 57px)}
+.controls{border-right:1px solid var(--line);background:var(--bg1);padding:22px;overflow-y:auto;max-height:calc(100vh - 57px)}
+.cgroup{margin-bottom:24px}
+.cgroup-t{font-size:9.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--text4);margin-bottom:14px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:10.5px;color:var(--text3);margin-bottom:5px;letter-spacing:.03em}
+.field input,.field select{width:100%;font-family:var(--mono);font-size:13px;padding:9px 11px;border-radius:8px;
+  border:1px solid var(--line);background:var(--panel2);color:var(--text)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.brow{margin-bottom:12px}
+.brow-h{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;margin-bottom:5px}
+.brow-h .nm{color:var(--text2)}.brow-h .vl{font-family:var(--disp);font-weight:700;font-size:13px}
+.brow-h .vl .u{font-size:9px;color:var(--text4);font-weight:400}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:3px;background:rgba(120,200,210,.12);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;cursor:pointer;box-shadow:0 0 0 4px rgba(25,227,210,.18)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border:none;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(25,227,210,.18)}
 
-/* CONTROLS */
-.controls{background:var(--bg1);border:0.5px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:2rem;position:relative;overflow:hidden}
-.controls::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),var(--cyan),transparent)}
-.ctrl-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:1.25rem;letter-spacing:-0.01em}
-.ctrl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem}
-.ctrl-group label{font-size:10px;font-weight:700;font-family:var(--mono);color:var(--text3);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em}
-.ctrl-group input,.ctrl-group select{
-  width:100%;background:var(--bg3);border:0.5px solid var(--border2);
-  border-radius:8px;padding:8px 12px;color:var(--text);
-  font-family:var(--mono);font-size:12px;outline:none;transition:border-color 0.2s;
-}
-.ctrl-group input:focus,.ctrl-group select:focus{border-color:var(--accent)}
-.ctrl-group select option{background:var(--bg2)}
-.slider-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
-.s-row{display:flex;align-items:center;gap:8px}
-.s-label{font-size:11px;font-weight:600;font-family:var(--mono);color:var(--text2);min-width:130px}
-input[type=range]{flex:1;height:3px;accent-color:var(--accent);background:var(--bg3)}
-.s-val{font-size:11px;font-family:var(--mono);font-weight:700;min-width:70px;text-align:right;color:var(--accent)}
+.paper-wrap{padding:28px;overflow-y:auto;max-height:calc(100vh - 57px)}
+.paper{max-width:880px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.rpt-head{padding:34px 40px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:20px;
+  background:linear-gradient(135deg,rgba(25,227,210,.06),transparent)}
+.rpt-head .ti{font-family:var(--disp);font-weight:800;font-size:24px;letter-spacing:-.02em}
+.rpt-head .st{font-size:11px;color:var(--text3);margin-top:6px;letter-spacing:.04em}
+.rpt-head .meta{text-align:right;font-size:11px;color:var(--text2);line-height:1.8}
+.rpt-head .meta b{color:var(--text);font-weight:600}
+.rpt-body{padding:34px 40px}
+.sec-t{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--text4);margin:0 0 18px}
+.sec+.sec{margin-top:34px;padding-top:30px;border-top:1px solid var(--line)}
+.riskcards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.rc{border:1px solid var(--line);border-radius:14px;padding:16px;border-top:3px solid}
+.rc .nm{font-size:11px;color:var(--text2);margin-bottom:10px}
+.rc .pc{font-family:var(--disp);font-weight:800;font-size:30px;line-height:1}
+.rc .bd{font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;margin-top:7px}
+.charts2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.chartbox{height:240px;position:relative}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text4);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line2)}
+td{padding:9px 10px;border-bottom:1px solid var(--line);color:var(--text2)}
+td.nm{color:var(--text)}td.vl{font-family:var(--disp);font-weight:600;color:var(--text)}
+.flag{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:5px}
+.flag.normal{color:var(--mint);background:rgba(52,230,168,.1)}
+.flag.high{color:var(--coral);background:rgba(255,93,115,.1)}
+.flag.low{color:var(--amber);background:rgba(255,186,74,.1)}
+.narr{font-size:13px;line-height:1.85;color:var(--text2)}
+.narr p{margin-bottom:14px}.narr strong{color:var(--text);font-weight:600}
+.narr .h{font-family:var(--disp);font-weight:700;font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.narr .h .nd{width:7px;height:7px;border-radius:50%}
+.rpt-foot{padding:24px 40px;border-top:1px solid var(--line);font-size:10px;color:var(--text4);line-height:1.7}
+.rpt-foot b{color:var(--text3)}
+@media(max-width:980px){.layout{grid-template-columns:1fr}.controls{max-height:none;border-right:none;border-bottom:1px solid var(--line)}.charts2{grid-template-columns:1fr}}
 
-/* REPORT */
-.report{background:var(--bg1);border:0.5px solid var(--border);border-radius:16px;overflow:hidden}
-
-.report-header{
-  padding:2.5rem;
-  background:linear-gradient(135deg,rgba(108,99,255,0.08),rgba(0,212,255,0.04));
-  border-bottom:0.5px solid var(--border);
-  display:flex;justify-content:space-between;align-items:flex-start;
-  position:relative;
-}
-.report-header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--cyan),var(--green))}
-.report-logo{font-size:26px;font-weight:800;letter-spacing:-0.04em;background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
-.report-subtitle{font-size:11px;font-family:var(--mono);color:var(--text3)}
-.report-meta{text-align:right;font-size:11px;font-family:var(--mono);color:var(--text3);line-height:2}
-.report-meta strong{color:var(--text2)}
-
-.report-body{padding:2rem}
-
-.rsection{margin-bottom:2.5rem}
-.rsection-title{
-  font-size:20px;font-weight:800;color:var(--text);letter-spacing:-0.02em;
-  margin-bottom:1rem;padding-bottom:10px;
-  border-bottom:0.5px solid var(--border);
-  display:flex;align-items:center;gap:10px;
-}
-.rsection-title::before{content:'';width:3px;height:20px;border-radius:2px;background:linear-gradient(135deg,var(--accent),var(--cyan));flex-shrink:0}
-
-.patient-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
-.pstat{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:14px}
-.pstat-label{font-size:10px;font-weight:700;font-family:var(--mono);color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em}
-.pstat-val{font-size:20px;font-weight:800;font-family:var(--mono)}
-
-.risk-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1.5rem}
-.rsc{border:0.5px solid var(--border);border-radius:12px;padding:16px;background:var(--bg2);position:relative;overflow:hidden}
-.rsc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px}
-.rsc-name{font-size:10px;font-weight:700;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px}
-.rsc-pct{font-size:28px;font-weight:800;font-family:var(--mono);margin-bottom:6px}
-.rsc-bar{height:4px;background:var(--bg3);border-radius:2px;margin-bottom:8px}
-.rsc-fill{height:100%;border-radius:2px}
-.rsc-status{font-size:11px;font-weight:700;font-family:var(--mono)}
-.rsc-drivers{margin-top:12px;padding-top:10px;border-top:0.5px solid var(--border)}
-.rsc-driver{display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);color:var(--text2);padding:3px 0}
-
-.bio-table{width:100%;border-collapse:collapse;font-size:12px}
-.bio-table th{text-align:left;font-size:10px;font-weight:700;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;padding:10px 14px;border-bottom:0.5px solid var(--border)}
-.bio-table td{padding:9px 14px;border-bottom:0.5px solid rgba(108,99,255,0.06);font-family:var(--mono);color:var(--text2)}
-.bio-table tr:last-child td{border-bottom:none}
-.bio-table .val{font-weight:700}
-.status-pill{font-size:10px;font-weight:700;padding:2px 9px;border-radius:6px;font-family:var(--mono)}
-.s-normal{background:rgba(0,255,136,0.1);color:var(--green)}
-.s-high{background:rgba(255,68,102,0.1);color:var(--red)}
-.s-low{background:rgba(255,170,0,0.1);color:var(--amber)}
-
-.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
-.chart-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem}
-.chart-box-title{font-size:10px;font-weight:700;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px}
-.chart-wrap{position:relative;width:100%;height:170px}
-
-.finding{display:flex;gap:14px;padding:14px 0;border-bottom:0.5px solid var(--border)}
-.finding:last-child{border-bottom:none}
-.finding-accent{width:3px;border-radius:2px;flex-shrink:0}
-.finding-icon{font-size:18px;flex-shrink:0;margin-top:2px}
-.finding-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-0.01em}
-.finding-body{font-size:12px;color:var(--text2);line-height:1.7}
-
-.method-text{font-size:12px;color:var(--text2);line-height:1.8}
-.method-text p{margin-bottom:10px}
-
-.ref-item{padding:8px 0;border-bottom:0.5px solid var(--border);display:flex;gap:10px;font-size:11px;font-family:var(--mono)}
-.ref-item:last-child{border-bottom:none}
-.ref-num{color:var(--accent);font-weight:700;min-width:20px}
-.ref-body{color:var(--text2);line-height:1.6}
-
-.report-footer{
-  padding:1.5rem 2rem;border-top:0.5px solid var(--border);
-  background:var(--bg2);font-size:10px;font-family:var(--mono);
-  color:var(--text4);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
-}
-
-/* PRINT */
+/* PRINT — clean light publication layout */
 @media print{
-  body{background:#fff;color:#000}
-  .topbar,.controls{display:none}
-  .report{background:#fff;border:none}
-  .report-header{background:#f5f5f5;border-bottom:1px solid #ddd}
-  .report-logo{color:#000;-webkit-text-fill-color:#000;background:none}
-  .report-subtitle,.report-meta{color:#666}
-  .rsection-title{color:#000;border-bottom-color:#ddd}
-  .pstat,.rsc,.chart-box{background:#f8f8f8;border-color:#ddd}
-  .bio-table th{color:#666;border-color:#ddd}
-  .bio-table td{border-color:#eee;color:#333}
-  .finding-body{color:#444}
-  .finding-title{color:#000}
-  .report-footer{background:#f5f5f5;border-color:#ddd;color:#999}
-  .method-text{color:#444}
-  .ref-body{color:#555}
-}
-
-@media(max-width:700px){
-  .ctrl-grid{grid-template-columns:1fr}
-  .slider-grid{grid-template-columns:1fr}
-  .patient-grid{grid-template-columns:repeat(2,1fr)}
-  .risk-summary{grid-template-columns:1fr}
-  .chart-grid{grid-template-columns:1fr}
+  @page{margin:14mm}
+  nav,.controls{display:none!important}
+  body{background:#fff!important;color:#111!important;background-image:none!important}
+  .layout{display:block}.paper-wrap{padding:0;max-height:none;overflow:visible}
+  .paper{border:none;border-radius:0;background:#fff;max-width:none}
+  .rpt-head{background:#fff;border-bottom:2px solid #111}
+  .rpt-head .ti,.rc .pc,.narr .h,.narr strong,td.nm,td.vl{color:#111!important}
+  .rpt-head .st,.rpt-head .meta,.sec-t,.rc .nm,td,.narr,.rpt-foot{color:#333!important}
+  .rc,.paper,table th{border-color:#ccc!important}
+  td,th{border-color:#ddd!important}
+  .sec+.sec{border-top-color:#ccc!important}
+  .brand b{-webkit-text-fill-color:#111}
 }
 </style>
 </head>
 <body>
-
-<div class="topbar">
-  <a href="index.html" class="logo">ENDORISK</a>
-  <div class="topbar-right">
-    <a href="app.html" class="btn">← Dashboard</a>
-    <button class="btn green" onclick="window.print()">🖨 Print / Save PDF</button>
+<nav>
+  <div class="brand"><span class="d"></span><b>ENDORISK</b></div>
+  <span style="font-size:12px;color:var(--text3)">Clinical Report Generator</span>
+  <div class="nlinks">
+    <span class="tag">Educational Demo</span>
+    <button class="btn p" onclick="window.print()">⤓ Save as PDF</button>
+    <a class="btn" href="app.html">Dashboard</a>
+    <a class="btn" href="index.html">Home</a>
   </div>
-</div>
+</nav>
 
-<div class="main">
-  <div class="controls">
-    <div class="ctrl-title">Patient & Report Configuration</div>
-    <div class="ctrl-grid">
-      <div class="ctrl-group"><label>Patient name</label><input type="text" id="pt-name" value="Sample Patient" oninput="updateReport()"></div>
-      <div class="ctrl-group"><label>Age</label><input type="number" id="pt-age" value="34" oninput="updateReport()"></div>
-      <div class="ctrl-group"><label>Sex</label><select id="pt-sex" onchange="updateReport()"><option>Female</option><option>Male</option><option>Other</option></select></div>
-      <div class="ctrl-group"><label>Ordering physician</label><input type="text" id="pt-physician" value="Dr. [Name]" oninput="updateReport()"></div>
-      <div class="ctrl-group"><label>Institution</label><input type="text" id="pt-institution" value="Research Platform" oninput="updateReport()"></div>
-      <div class="ctrl-group"><label>Report date</label><input type="text" id="pt-date" oninput="updateReport()"></div>
-    </div>
-    <div style="font-size:10px;font-weight:700;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px">Biomarker Input</div>
-    <div class="slider-grid" id="ctrl-sliders"></div>
-    <button class="btn" style="margin-top:4px;border-color:var(--accent);color:var(--accent)" onclick="updateReport()">↻ Refresh Report</button>
-  </div>
-
-  <div class="report" id="report">
-    <div class="report-header">
-      <div>
-        <div class="report-logo">ENDORISK</div>
-        <div class="report-subtitle">Endocrine Disorder Risk Assessment · University of Texas at Austin · Research Platform</div>
+<div class="layout">
+  <aside class="controls">
+    <div class="cgroup">
+      <div class="cgroup-t">Patient Information</div>
+      <div class="field"><label>Name / Identifier</label><input id="pName" value="Sample Patient"></div>
+      <div class="field-row">
+        <div class="field"><label>Age</label><input id="pAge" type="number" value="34"></div>
+        <div class="field"><label>Sex</label><select id="pSex"><option>Female</option><option>Male</option><option>Other</option></select></div>
       </div>
-      <div class="report-meta">
-        <div><strong>Patient:</strong> <span id="r-name">Sample Patient</span></div>
-        <div><strong>Age / Sex:</strong> <span id="r-age">34</span> · <span id="r-sex">Female</span></div>
-        <div><strong>Physician:</strong> <span id="r-physician">Dr. [Name]</span></div>
-        <div><strong>Institution:</strong> <span id="r-institution">Research Platform</span></div>
-        <div><strong>Date:</strong> <span id="r-date"></span></div>
+      <div class="field-row">
+        <div class="field"><label>Visit</label><input id="pVisit" type="number" value="1"></div>
+        <div class="field"><label>Date</label><input id="pDate" type="date"></div>
       </div>
     </div>
-
-    <div class="report-body">
-      <div class="rsection">
-        <div class="rsection-title">Patient Summary</div>
-        <div class="patient-grid">
-          <div class="pstat"><div class="pstat-label">Conditions Assessed</div><div class="pstat-val" style="color:var(--accent)">4</div></div>
-          <div class="pstat"><div class="pstat-label">Biomarkers Analyzed</div><div class="pstat-val" style="color:var(--cyan)">12</div></div>
-          <div class="pstat"><div class="pstat-label">Flagged Values</div><div class="pstat-val" style="color:var(--amber)" id="r-flags">0</div></div>
-          <div class="pstat"><div class="pstat-label">Highest Risk</div><div class="pstat-val" style="color:var(--red)" id="r-highest">—</div></div>
-        </div>
-      </div>
-
-      <div class="rsection">
-        <div class="rsection-title">Risk Stratification</div>
-        <div class="risk-summary" id="r-risk-cards"></div>
-      </div>
-
-      <div class="rsection">
-        <div class="rsection-title">Complete Biomarker Panel</div>
-        <table class="bio-table"><thead><tr><th>Biomarker</th><th>Measured Value</th><th>Reference Range</th><th>Units</th><th>Status</th></tr></thead><tbody id="r-bio-table"></tbody></table>
-      </div>
-
-      <div class="rsection">
-        <div class="rsection-title">Risk Visualizations</div>
-        <div class="chart-grid">
-          <div class="chart-box"><div class="chart-box-title">Risk Scores — All Conditions</div><div class="chart-wrap"><canvas id="r-bar" role="img" aria-label="Risk scores"></canvas></div></div>
-          <div class="chart-box"><div class="chart-box-title">Biomarker Deviation Profile</div><div class="chart-wrap"><canvas id="r-radar" role="img" aria-label="Radar chart"></canvas></div></div>
-        </div>
-      </div>
-
-      <div class="rsection">
-        <div class="rsection-title">Clinical Findings & Recommendations</div>
-        <div id="r-findings"></div>
-      </div>
-
-      <div class="rsection">
-        <div class="rsection-title">Methodology</div>
-        <div class="method-text">
-          <p>Risk scores are generated using logistic regression classifiers calibrated to published clinical reference ranges and epidemiological data. Each model outputs a probability estimate (0–100%) representing predicted disorder risk relative to a normative population. Feature contributions are derived from normalized coefficient magnitudes after z-score standardization of input biomarkers.</p>
-          <p>Risk thresholds: &lt;25% low · 25–50% moderate · 50–75% elevated · &gt;75% high. Primary training dataset: PIMA Indians Diabetes Dataset (Smith et al., 1988; n=768). Reference guidelines: ADA Standards of Medical Care (2024), ATA (Jonklaas et al., 2014), NCEP ATP III / IDF consensus (2009), Endocrine Society (Bornstein et al., 2016).</p>
-        </div>
-      </div>
-
-      <div class="rsection">
-        <div class="rsection-title">References</div>
-        <div class="ref-item"><span class="ref-num">1</span><span class="ref-body">Smith, J.W. et al. (1988). Using the ADAP learning algorithm to forecast the onset of diabetes mellitus. Proc. SCAMC, 261–265.</span></div>
-        <div class="ref-item"><span class="ref-num">2</span><span class="ref-body">American Diabetes Association. (2024). Standards of Medical Care in Diabetes. Diabetes Care, 47(Suppl. 1).</span></div>
-        <div class="ref-item"><span class="ref-num">3</span><span class="ref-body">Jonklaas, J. et al. (2014). ATA Guidelines for Treatment of Hypothyroidism. Thyroid, 24(12), 1670–1751.</span></div>
-        <div class="ref-item"><span class="ref-num">4</span><span class="ref-body">Alberti, K.G. et al. (2009). Harmonizing the Metabolic Syndrome. Circulation, 120(16), 1640–1645.</span></div>
-        <div class="ref-item"><span class="ref-num">5</span><span class="ref-body">Bornstein, S.R. et al. (2016). Diagnosis and Treatment of Primary Adrenal Insufficiency. JCEM, 101(2), 364–389.</span></div>
-      </div>
+    <div class="cgroup">
+      <div class="cgroup-t">Biomarkers</div>
+      <div id="bioControls"></div>
     </div>
+  </aside>
 
-    <div class="report-footer">
-      <div>Generated by ENDORISK · Aryan Shoaei · University of Texas at Austin</div>
-      <div>For research and educational purposes only · Not for clinical use</div>
+  <div class="paper-wrap">
+    <div class="paper" id="paper">
+      <div class="rpt-head">
+        <div>
+          <div class="ti">Endocrine Risk Summary</div>
+          <div class="st">Transparent rule-based screening · educational demonstration</div>
+        </div>
+        <div class="meta" id="rMeta"></div>
+      </div>
+      <div class="rpt-body">
+        <div class="sec">
+          <div class="sec-t">Risk Overview</div>
+          <div class="riskcards" id="riskCards"></div>
+        </div>
+        <div class="sec">
+          <div class="sec-t">Visualizations</div>
+          <div class="charts2">
+            <div class="chartbox"><canvas id="barC"></canvas></div>
+            <div class="chartbox"><canvas id="radarC"></canvas></div>
+          </div>
+        </div>
+        <div class="sec">
+          <div class="sec-t">Biomarker Panel</div>
+          <table><thead><tr><th>Biomarker</th><th>Value</th><th>Reference</th><th style="text-align:right">Status</th></tr></thead>
+          <tbody id="bioTable"></tbody></table>
+        </div>
+        <div class="sec">
+          <div class="sec-t">Clinical Narrative</div>
+          <div class="narr" id="rNarr"></div>
+        </div>
+      </div>
+      <div class="rpt-foot">
+        <b>Educational demonstration — not a clinical document.</b> Risk indices are computed by transparent, hand-specified rules applied to the values above using published reference ranges (ADA, ATA, NCEP ATP III, Endocrine Society). EndoRisk uses no trained machine-learning models, reports no validated diagnostic-accuracy metrics, and is not a medical device. This report must not be used for diagnosis, screening, or clinical decision-making.
+      </div>
     </div>
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 const labs={
-  tsh:{name:'TSH',unit:'mIU/L',min:0.1,max:8,val:2.1,refLow:0.4,refHigh:4.0,step:0.1,group:'Thyroid'},
-  t4:{name:'Free T4',unit:'ng/dL',min:0.3,max:3,val:1.1,refLow:0.8,refHigh:1.8,step:0.05,group:'Thyroid'},
-  t3:{name:'Free T3',unit:'pg/mL',min:1,max:7,val:2.9,refLow:2.3,refHigh:4.2,step:0.1,group:'Thyroid'},
-  glucose:{name:'Fasting Glucose',unit:'mg/dL',min:60,max:350,val:95,refLow:70,refHigh:99,step:1,group:'Metabolic'},
-  hba1c:{name:'HbA1c',unit:'%',min:4,max:14,val:5.4,refLow:4,refHigh:5.6,step:0.1,group:'Metabolic'},
-  insulin:{name:'Fasting Insulin',unit:'μU/mL',min:2,max:100,val:8,refLow:2,refHigh:25,step:1,group:'Metabolic'},
-  bmi:{name:'BMI',unit:'kg/m²',min:14,max:55,val:26,refLow:18.5,refHigh:24.9,step:0.5,group:'Metabolic'},
-  cortisol:{name:'AM Cortisol',unit:'μg/dL',min:1,max:45,val:14,refLow:6,refHigh:23,step:0.5,group:'Adrenal'},
-  acth:{name:'ACTH',unit:'pg/mL',min:5,max:150,val:28,refLow:10,refHigh:60,step:1,group:'Adrenal'},
-  dhea:{name:'DHEA-S',unit:'μg/dL',min:20,max:600,val:220,refLow:80,refHigh:430,step:5,group:'Adrenal'},
-  trig:{name:'Triglycerides',unit:'mg/dL',min:40,max:600,val:130,refLow:50,refHigh:149,step:5,group:'Lipid'},
-  hdl:{name:'HDL',unit:'mg/dL',min:15,max:110,val:52,refLow:40,refHigh:100,step:1,group:'Lipid'}
+  tsh:{name:'TSH',unit:'mIU/L',min:0.1,max:8,val:2.1,refLow:0.4,refHigh:4.0,step:0.1},
+  t4:{name:'Free T4',unit:'ng/dL',min:0.3,max:3,val:1.1,refLow:0.8,refHigh:1.8,step:0.05},
+  t3:{name:'Free T3',unit:'pg/mL',min:1,max:7,val:2.9,refLow:2.3,refHigh:4.2,step:0.1},
+  glucose:{name:'Fasting Glucose',unit:'mg/dL',min:60,max:350,val:95,refLow:70,refHigh:99,step:1},
+  hba1c:{name:'HbA1c',unit:'%',min:4,max:14,val:5.4,refLow:4,refHigh:5.6,step:0.1},
+  insulin:{name:'Fasting Insulin',unit:'μU/mL',min:2,max:100,val:8,refLow:2,refHigh:25,step:1},
+  bmi:{name:'BMI',unit:'kg/m²',min:14,max:55,val:26,refLow:18.5,refHigh:24.9,step:0.5},
+  cortisol:{name:'AM Cortisol',unit:'μg/dL',min:1,max:45,val:14,refLow:6,refHigh:23,step:0.5},
+  acth:{name:'ACTH',unit:'pg/mL',min:5,max:150,val:28,refLow:10,refHigh:60,step:1},
+  dhea:{name:'DHEA-S',unit:'μg/dL',min:20,max:600,val:220,refLow:80,refHigh:430,step:5},
+  trig:{name:'Triglycerides',unit:'mg/dL',min:40,max:600,val:130,refLow:50,refHigh:149,step:5},
+  hdl:{name:'HDL Cholesterol',unit:'mg/dL',min:15,max:110,val:52,refLow:40,refHigh:100,step:1}
 };
-const conditions=[
-  {id:'thyroid',name:'Thyroid Dysfunction',drivers:[{name:'TSH',key:'tsh',dir:1},{name:'Free T4',key:'t4',dir:-1},{name:'Free T3',key:'t3',dir:-1}]},
-  {id:'diabetes',name:'Type 2 Diabetes',drivers:[{name:'Glucose',key:'glucose',dir:1},{name:'HbA1c',key:'hba1c',dir:1},{name:'BMI',key:'bmi',dir:1},{name:'Insulin',key:'insulin',dir:1}]},
-  {id:'metabolic',name:'Metabolic Syndrome',drivers:[{name:'Triglycerides',key:'trig',dir:1},{name:'HDL (inv.)',key:'hdl',dir:-1},{name:'BMI',key:'bmi',dir:1},{name:'Glucose',key:'glucose',dir:1}]},
-  {id:'adrenal',name:'Adrenal Insufficiency',drivers:[{name:'Cortisol',key:'cortisol',dir:-1},{name:'ACTH',key:'acth',dir:-1},{name:'DHEA-S',key:'dhea',dir:-1}]}
-];
-function sig(x){return 1/(1+Math.exp(-x))}
-function getRisks(){
-  const v=labs;
-  const tshZ=(v.tsh.val-2.2)/1.2,t4Z=(1.3-v.t4.val)/0.3,t3Z=(3.2-v.t3.val)/0.6;
-  const thyroid=Math.min(99,Math.round(sig(tshZ*1.2+t4Z*0.8+t3Z*0.6-0.5)*100));
-  const gZ=(v.glucose.val-90)/20,hZ=(v.hba1c.val-5.4)/0.6,bZ=(v.bmi.val-25)/5,iZ=(v.insulin.val-10)/8;
-  const diabetes=Math.min(99,Math.round(sig(gZ*1.4+hZ*1.1+bZ*0.7+iZ*0.5-0.8)*100));
-  const trZ=(v.trig.val-130)/50,hdlZ=(50-v.hdl.val)/15,bZ2=(v.bmi.val-27)/5,gZ2=(v.glucose.val-95)/20;
-  const metabolic=Math.min(99,Math.round(sig(trZ*1.0+hdlZ*0.9+bZ2*0.8+gZ2*0.7-0.6)*100));
-  const cZ=(12-v.cortisol.val)/5,aZ=(35-v.acth.val)/15,dZ=(200-v.dhea.val)/80;
-  const adrenal=Math.min(99,Math.round(sig(cZ*1.3+aZ*0.9+dZ*0.5-0.4)*100));
+const sig=x=>1/(1+Math.exp(-x)),clampPct=x=>Math.max(1,Math.min(99,Math.round(x*100)));
+function computeRisks(L=labs){
+  const tZ=(L.tsh.val-2.2)/1.2,t4Z=(1.3-L.t4.val)/0.3,t3Z=(3.2-L.t3.val)/0.6;
+  const thyroid=clampPct(sig(tZ*1.2+t4Z*0.8+t3Z*0.6-0.5));
+  const gZ=(L.glucose.val-90)/20,hZ=(L.hba1c.val-5.4)/0.6,bZ=(L.bmi.val-25)/5,iZ=(L.insulin.val-10)/8;
+  const diabetes=clampPct(sig(gZ*1.4+hZ*1.1+bZ*0.7+iZ*0.5-0.8));
+  const trZ=(L.trig.val-130)/50,hdlZ=(50-L.hdl.val)/15,bZ2=(L.bmi.val-27)/5,gZ2=(L.glucose.val-95)/20;
+  const metabolic=clampPct(sig(trZ*1.0+hdlZ*0.9+bZ2*0.8+gZ2*0.7-0.6));
+  const cZ=(12-L.cortisol.val)/5,aZ=(35-L.acth.val)/15,dZ=(200-L.dhea.val)/80;
+  const adrenal=clampPct(sig(cZ*1.3+aZ*0.9+dZ*0.5-0.4));
   return{thyroid,diabetes,metabolic,adrenal};
 }
-function riskColor(p){
-  if(p<25)return{text:'#00ff88',bar:'#00ff88',label:'Low Risk'};
-  if(p<50)return{text:'#ffaa00',bar:'#ffaa00',label:'Moderate Risk'};
-  if(p<75)return{text:'#ff4466',bar:'#ff4466',label:'Elevated Risk'};
-  return{text:'#ff4466',bar:'#ff4466',label:'High Risk'};
-}
-function labStatus(k){const l=labs[k];return l.val<l.refLow?'Low':l.val>l.refHigh?'High':'Normal'}
-let barChart=null,radarChart=null;
-function updateReport(){
-  document.getElementById('r-name').textContent=document.getElementById('pt-name').value;
-  document.getElementById('r-age').textContent=document.getElementById('pt-age').value;
-  document.getElementById('r-sex').textContent=document.getElementById('pt-sex').value;
-  document.getElementById('r-physician').textContent=document.getElementById('pt-physician').value;
-  document.getElementById('r-institution').textContent=document.getElementById('pt-institution').value;
-  document.getElementById('r-date').textContent=document.getElementById('pt-date').value;
-  const r=getRisks();
-  const vals=[r.thyroid,r.diabetes,r.metabolic,r.adrenal];
-  const flags=Object.keys(labs).filter(k=>labStatus(k)!=='Normal').length;
-  document.getElementById('r-flags').textContent=flags;
-  document.getElementById('r-highest').textContent=Math.max(...vals)+'%';
-  const colors=['#00d4ff','#ff4466','#ffaa00','#00ff88'];
-  document.getElementById('r-risk-cards').innerHTML=conditions.map((c,i)=>{
-    const p=vals[i],col=riskColor(p),color=colors[i];
-    const drivers=c.drivers.map(d=>{
-      const l=labs[d.key];
-      const norm=(l.val-l.refLow)/(l.refHigh-l.refLow);
-      const contrib=Math.max(0,Math.min(1,d.dir===1?norm:1-norm));
-      return`<div class="rsc-driver"><span>${d.name}</span><span style="color:${col.text}">${Math.round(contrib*100)}%</span></div>`;
-    }).join('');
-    return`<div class="rsc" style="border-left:2px solid ${color}">
-      <div class="rsc-name">${c.name}</div>
-      <div class="rsc-pct" style="color:${col.text}">${p}%</div>
-      <div class="rsc-bar"><div class="rsc-fill" style="width:${p}%;background:${col.bar};box-shadow:0 0 8px ${col.bar}44"></div></div>
-      <div class="rsc-status" style="color:${col.text}">${col.label}</div>
-      <div class="rsc-drivers">${drivers}</div>
-    </div>`;
+function band(p){if(p<25)return{c:'#34e6a8',label:'Low'};if(p<50)return{c:'#ffba4a',label:'Moderate'};return{c:'#ff5d73',label:'Elevated'};}
+function labStatus(k){const l=labs[k];return l.val<l.refLow?'low':l.val>l.refHigh?'high':'normal'}
+const CONDS=[{id:'thyroid',name:'Thyroid',c:'#19e3d2'},{id:'diabetes',name:'T2DM',c:'#ff5d73'},
+  {id:'metabolic',name:'Metabolic',c:'#ffba4a'},{id:'adrenal',name:'Adrenal',c:'#34e6a8'}];
+
+let barChart,radarChart;
+function renderControls(){
+  document.getElementById('bioControls').innerHTML=Object.keys(labs).map(k=>{
+    const l=labs[k];return `<div class="brow"><div class="brow-h"><span class="nm">${l.name}</span>
+      <span class="vl" id="cv-${k}">${l.val}<span class="u"> ${l.unit}</span></span></div>
+      <input type="range" min="${l.min}" max="${l.max}" step="${l.step}" value="${l.val}" data-k="${k}"></div>`;
   }).join('');
-  document.getElementById('r-bio-table').innerHTML=Object.entries(labs).map(([k,l])=>{
-    const s=labStatus(k);
-    const cls=s==='Normal'?'s-normal':s==='High'?'s-high':'s-low';
-    const valCol=s==='Normal'?'var(--text2)':s==='High'?'var(--red)':'var(--amber)';
-    return`<tr><td>${l.name}</td><td class="val" style="color:${valCol}">${l.val.toFixed(1)}</td><td>${l.refLow}–${l.refHigh}</td><td>${l.unit}</td><td><span class="status-pill ${cls}">${s}</span></td></tr>`;
+  document.querySelectorAll('#bioControls input').forEach(inp=>inp.oninput=()=>{
+    const k=inp.dataset.k;labs[k].val=parseFloat(inp.value);
+    document.getElementById('cv-'+k).innerHTML=`${labs[k].val}<span class="u"> ${labs[k].unit}</span>`;
+    renderReport();
+  });
+}
+function fmtDate(){const d=document.getElementById('pDate').value;if(!d)return new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});return new Date(d+'T00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});}
+function renderMeta(){
+  document.getElementById('rMeta').innerHTML=
+    `<b>${document.getElementById('pName').value||'—'}</b><br>
+     ${document.getElementById('pSex').value} · Age ${document.getElementById('pAge').value} · Visit ${document.getElementById('pVisit').value}<br>
+     ${fmtDate()}`;
+}
+function renderReport(){
+  renderMeta();
+  const r=computeRisks();
+  document.getElementById('riskCards').innerHTML=CONDS.map(cn=>{
+    const p=r[cn.id],b=band(p);
+    return `<div class="rc" style="border-top-color:${b.c}"><div class="nm">${cn.name}</div>
+      <div class="pc" style="color:${b.c}">${p}<span style="font-size:14px">%</span></div>
+      <div class="bd" style="color:${b.c}">${b.label}</div></div>`;
   }).join('');
-  if(barChart)barChart.destroy();
-  barChart=new Chart(document.getElementById('r-bar'),{
-    type:'bar',
-    data:{labels:['Thyroid','T2DM','Metabolic','Adrenal'],datasets:[{data:vals,backgroundColor:colors.map(c=>c+'88'),borderColor:colors,borderWidth:1.5,borderRadius:6}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,grid:{color:'rgba(108,99,255,0.06)'},ticks:{color:'#4a485a',font:{family:'JetBrains Mono',size:10},callback:v=>v+'%'}},x:{grid:{display:false},ticks:{color:'#4a485a',font:{family:'JetBrains Mono',size:10}}}}}
-  });
-  const radarKeys=['tsh','glucose','hba1c','bmi','cortisol','trig','hdl'];
-  const radarData=radarKeys.map(k=>{const l=labs[k];return Math.min(150,Math.max(0,((l.val-l.refLow)/(l.refHigh-l.refLow))*100))});
-  if(radarChart)radarChart.destroy();
-  radarChart=new Chart(document.getElementById('r-radar'),{
-    type:'radar',
-    data:{labels:radarKeys.map(k=>labs[k].name.split(' ').pop()),datasets:[{data:radarData,backgroundColor:'rgba(108,99,255,0.1)',borderColor:'#6c63ff',borderWidth:1.5,pointBackgroundColor:'#6c63ff',pointRadius:3}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:150,grid:{color:'rgba(108,99,255,0.08)'},ticks:{display:false},angleLines:{color:'rgba(108,99,255,0.08)'},pointLabels:{color:'#4a485a',font:{size:9,family:'JetBrains Mono'}}}}}
-  });
-  const findings=[];
-  if(r.diabetes>40)findings.push({color:'#ff4466',icon:'🩸',title:'Elevated Type 2 Diabetes Risk',body:`Predicted risk ${r.diabetes}%. Fasting glucose ${labs.glucose.val} mg/dL ${labs.glucose.val>=126?'meets ADA diagnostic threshold':labs.glucose.val>=100?'(prediabetic range 100–125 mg/dL)':'within normal limits'}. HbA1c ${labs.hba1c.val}% ${labs.hba1c.val>=6.5?'meets ADA diagnostic criteria':labs.hba1c.val>=5.7?'(prediabetes 5.7–6.4%)':'normal'}. BMI ${labs.bmi.val} kg/m² ${labs.bmi.val>30?'indicates obesity, major T2DM risk factor':'contributes to metabolic risk'}. Recommend OGTT, lifestyle counseling, and repeat metabolic panel in 3 months.`});
-  if(r.thyroid>35)findings.push({color:'#00d4ff',icon:'🫀',title:'Thyroid Panel Requires Evaluation',body:`Predicted thyroid dysfunction risk ${r.thyroid}%. TSH ${labs.tsh.val} mIU/L ${labs.tsh.val>4?'exceeds ATA upper limit of 4.0 mIU/L':labs.tsh.val<0.4?'below lower limit of 0.4 mIU/L':'within normal range'}. Free T4 ${labs.t4.val} ng/dL. Per ATA guidelines, TPO antibody testing and repeat TSH in 6 weeks recommended. Consider referral to endocrinology.`});
-  if(r.metabolic>40)findings.push({color:'#ffaa00',icon:'⚡',title:'Metabolic Syndrome Criteria Elevated',body:`Predicted metabolic syndrome risk ${r.metabolic}%. Triglycerides ${labs.trig.val} mg/dL ${labs.trig.val>149?'exceed NCEP threshold':'within range'}. HDL ${labs.hdl.val} mg/dL ${labs.hdl.val<40?'below protective minimum':'adequate'}. Waist circumference and blood pressure measurement required to complete 5-criterion ATP III assessment.`});
-  if(r.adrenal>30)findings.push({color:'#00ff88',icon:'🧪',title:'Adrenal Axis Monitoring Recommended',body:`Predicted adrenal insufficiency risk ${r.adrenal}%. AM cortisol ${labs.cortisol.val} μg/dL ${labs.cortisol.val<6?'below diagnostic threshold of 6 μg/dL':'approaching lower reference bound'}. ACTH ${labs.acth.val} pg/mL. Per Endocrine Society guidelines, cosyntropin stimulation test indicated if patient is symptomatic (fatigue, hypotension, hyponatremia).`});
-  if(!findings.length)findings.push({color:'#6c63ff',icon:'✓',title:'All Models Within Low-Risk Range',body:'Current biomarker profile does not indicate elevated risk for any modeled endocrine condition. All four logistic regression classifiers return low-risk classifications. Continue routine monitoring per age- and sex-appropriate screening guidelines.'});
-  document.getElementById('r-findings').innerHTML=findings.map(f=>`<div class="finding">
-    <div class="finding-accent" style="background:${f.color}"></div>
-    <div class="finding-icon">${f.icon}</div>
-    <div><div class="finding-title">${f.title}</div><div class="finding-body">${f.body}</div></div>
-  </div>`).join('');
+  document.getElementById('bioTable').innerHTML=Object.keys(labs).map(k=>{
+    const l=labs[k],st=labStatus(k),fl=st==='normal'?'In range':st==='high'?'High':'Low';
+    return `<tr><td class="nm">${l.name}</td><td class="vl">${l.val} <span style="color:var(--text4);font-weight:400">${l.unit}</span></td>
+      <td>${l.refLow}–${l.refHigh}</td><td style="text-align:right"><span class="flag ${st}">${fl}</span></td></tr>`;
+  }).join('');
+  const L=labs;
+  document.getElementById('rNarr').innerHTML=
+    `<div class="h"><span class="nd" style="background:${band(r.thyroid).c}"></span>Thyroid · ${r.thyroid}%</div>
+     <p>TSH of <strong>${L.tsh.val} mIU/L</strong> ${L.tsh.val>4?'exceeds':'is within'} the ATA reference ceiling (4.0 mIU/L), with Free T4 at <strong>${L.t4.val} ng/dL</strong> indicating a ${L.t4.val<0.8?'hypothyroid':'euthyroid'} pattern.</p>
+     <div class="h"><span class="nd" style="background:${band(r.diabetes).c}"></span>Type 2 Diabetes · ${r.diabetes}%</div>
+     <p>Fasting glucose <strong>${L.glucose.val} mg/dL</strong> ${L.glucose.val>=126?'reaches the ADA diagnostic threshold':L.glucose.val>=100?'falls in the prediabetic band (100–125)':'is normal'}; HbA1c <strong>${L.hba1c.val}%</strong> ${L.hba1c.val>=6.5?'meets ADA diagnostic criteria':L.hba1c.val>=5.7?'indicates prediabetes (5.7–6.4%)':'is normal'}. BMI ${L.bmi.val} kg/m².</p>
+     <div class="h"><span class="nd" style="background:${band(r.metabolic).c}"></span>Metabolic Syndrome · ${r.metabolic}%</div>
+     <p>Triglycerides <strong>${L.trig.val} mg/dL</strong> ${L.trig.val>149?'exceed the 150 mg/dL threshold':'are within range'}; HDL <strong>${L.hdl.val} mg/dL</strong> ${L.hdl.val<40?'is below the protective floor':'is adequate'}, framed against NCEP ATP III clustering criteria.</p>
+     <div class="h"><span class="nd" style="background:${band(r.adrenal).c}"></span>Adrenal · ${r.adrenal}%</div>
+     <p>AM cortisol <strong>${L.cortisol.val} μg/dL</strong> ${L.cortisol.val<6?'is below the 6 μg/dL threshold':'is within the morning range'}, with ACTH ${L.acth.val} pg/mL ${L.acth.val>60&&L.cortisol.val<6?'(elevated ACTH with low cortisol would suggest a primary pattern)':'noted for context'}.</p>`;
+  // charts
+  const data=CONDS.map(c=>r[c.id]),colors=CONDS.map(c=>band(r[c.id]).c);
+  if(barChart){barChart.data.datasets[0].data=data;barChart.data.datasets[0].backgroundColor=colors;barChart.update('none');}
+  else barChart=new Chart(document.getElementById('barC'),{type:'bar',
+    data:{labels:CONDS.map(c=>c.name),datasets:[{data,backgroundColor:colors,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:'Risk Index by Condition',color:'#8ea0a8',font:{family:'JetBrains Mono',size:11}}},
+      scales:{y:{min:0,max:100,grid:{color:'rgba(120,200,210,.07)'},ticks:{color:'#566570',font:{family:'JetBrains Mono',size:10},callback:v=>v+'%'}},x:{grid:{display:false},ticks:{color:'#8ea0a8',font:{family:'JetBrains Mono',size:10}}}}}});
+  const keys=['tsh','glucose','hba1c','bmi','trig','cortisol'];
+  const rdata=keys.map(k=>Math.round(((labs[k].val-labs[k].min)/(labs[k].max-labs[k].min))*100));
+  if(radarChart){radarChart.data.datasets[0].data=rdata;radarChart.update('none');}
+  else radarChart=new Chart(document.getElementById('radarC'),{type:'radar',
+    data:{labels:keys.map(k=>labs[k].name.split(' ')[0]),datasets:[{data:rdata,backgroundColor:'rgba(124,116,255,.16)',borderColor:'#7c74ff',borderWidth:2,pointBackgroundColor:'#7c74ff',pointRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:'Biomarker Profile',color:'#8ea0a8',font:{family:'JetBrains Mono',size:11}}},
+      scales:{r:{min:0,max:100,grid:{color:'rgba(120,200,210,.1)'},angleLines:{color:'rgba(120,200,210,.1)'},pointLabels:{color:'#8ea0a8',font:{size:9,family:'JetBrains Mono'}},ticks:{display:false}}}}});
 }
-const sliderKeys=['glucose','hba1c','bmi','insulin','tsh','t4','cortisol','trig','hdl'];
-document.getElementById('ctrl-sliders').innerHTML=sliderKeys.map(k=>{
-  const l=labs[k];
-  return`<div class="s-row">
-    <span class="s-label">${l.name}</span>
-    <input type="range" min="${l.min}" max="${l.max}" step="${l.step}" value="${l.val}" oninput="updateLab('${k}',this.value)">
-    <span class="s-val" id="csv-${k}">${l.val.toFixed(1)} ${l.unit}</span>
-  </div>`;
-}).join('');
-function updateLab(key,v){
-  labs[key].val=parseFloat(parseFloat(v).toFixed(2));
-  document.getElementById('csv-'+key).textContent=labs[key].val.toFixed(1)+' '+labs[key].unit;
-  updateReport();
-}
-document.getElementById('pt-date').value=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
-updateReport();
+['pName','pAge','pSex','pVisit','pDate'].forEach(id=>document.getElementById(id).addEventListener('input',renderMeta));
+renderControls();renderReport();
 </script>
-<script src="loader.js"></script>
 </body>
 </html>
